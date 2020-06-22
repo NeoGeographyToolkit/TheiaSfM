@@ -16,7 +16,7 @@ add_executable(build_1dsfm_reconstruction build_1dsfm_reconstruction.cc)
 target_link_libraries(build_1dsfm_reconstruction theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 
 # Reconstruction visualization.
-find_package(OpenGL REQUIRED)
+#find_package(OpenGL REQUIRED)
 if (NOT MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
   find_package(GLUT REQUIRED)
@@ -38,10 +38,10 @@ else (NOT MSVC)
   set(EXTRA_GL_LIBRARIES ${GLEW_LIBRARIES})
 endif (NOT MSVC)
 
-add_executable(view_reconstruction view_reconstruction.cc)
-target_link_libraries(view_reconstruction theia ${GFLAGS_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${EXTRA_GL_LIBRARIES})
+#add_executable(view_reconstruction view_reconstruction.cc)
+#target_link_libraries(view_reconstruction theia ${GFLAGS_LIBRARIES}
+#  ${OPENGL_LIBRARIES}
+#  ${EXTRA_GL_LIBRARIES})
 
 # Useful tools for analyzing reconstructions.
 add_executable(compute_reconstruction_statistics compute_reconstruction_statistics.cc)
@@ -89,3 +89,11 @@ target_link_libraries(create_calibration_file_from_exif theia ${GFLAGS_LIBRARIES
 
 add_executable(create_reconstruction_from_strecha_dataset create_reconstruction_from_strecha_dataset.cc)
 target_link_libraries(create_reconstruction_from_strecha_dataset theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
+
+ADD_EXECUTABLE(export_reconstruction_to_vw export_reconstruction_to_vw.cc)
+TARGET_LINK_LIBRARIES(export_reconstruction_to_vw theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
+
+ADD_EXECUTABLE(export_matches_file_to_vw export_matches_file_to_vw.cc)
+TARGET_LINK_LIBRARIES(export_matches_file_to_vw theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
+
+install (TARGETS build_reconstruction export_reconstruction_to_vw export_matches_file_to_vw DESTINATION bin)

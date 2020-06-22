@@ -38,6 +38,7 @@
 #include <Eigen/Core>
 #include <algorithm>
 #include <vector>
+#include <glog/logging.h>
 
 #include "theia/math/util.h"
 #include "theia/matching/feature_correspondence.h"

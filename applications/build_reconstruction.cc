@@ -369,6 +369,7 @@ void AddImagesToReconstructionBuilder(
     CHECK(theia::ReadCalibration(FLAGS_calibration_file,
                                  &camera_intrinsics_prior))
         << "Could not read calibration file.";
+    std::cout << "Reading calibration file: " << FLAGS_calibration_file << std::endl;
   }
 
   // Add images with possible calibration. When the intrinsics group id is
@@ -384,12 +385,17 @@ void AddImagesToReconstructionBuilder(
     std::string image_filename;
     CHECK(theia::GetFilenameFromFilepath(image_file, true, &image_filename));
 
+    std::cout << "Loading image data for " << image_filename << std::endl;
     const theia::CameraIntrinsicsPrior* image_camera_intrinsics_prior =
       FindOrNull(camera_intrinsics_prior, image_filename);
     if (image_camera_intrinsics_prior != nullptr) {
+       std::cout << "Loaded intrinsic data: " <<  image_camera_intrinsics_prior->focal_length.value << std::endl;
       CHECK(reconstruction_builder->AddImageWithCameraIntrinsicsPrior(
           image_file, *image_camera_intrinsics_prior, intrinsics_group_id));
     } else {
+      // Fail if there was a calibration file and we failed to load intrinsic data for camera
+      CHECK(FLAGS_calibration_file.size() == 0)
+            << "Failed to find intrinsic data in calibration file!";
       CHECK(reconstruction_builder->AddImage(image_file, intrinsics_group_id));
     }
   }

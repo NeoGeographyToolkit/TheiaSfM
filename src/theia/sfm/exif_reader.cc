@@ -94,8 +94,9 @@ void ExifReader::LoadSensorWidthDatabase() {
 
   std::ifstream ifs(sensor_width_file.c_str(), std::ios::in);
   if (!ifs.is_open()) {
-    LOG(FATAL) << "Cannot read the sensor width file from "
-               << sensor_width_file;
+    //LOG(FATAL) << "Cannot read the sensor width file from "
+    //           << sensor_width_file;
+    return; // We can run fine without the sensor width file, suppress this error.
   }
 
   while (!ifs.eof()) {

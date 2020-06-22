@@ -147,6 +147,10 @@ else (GLOG_FOUND)
     "GLOG_LIBRARY")
 endif (GLOG_FOUND)
 
+# Record these values, they are getting wiped for some reason!
+set(TEMP_GID ${GLOG_INCLUDE_DIR})
+set(TEMP_GL ${GLOG_LIBRARY})
+
 # Ceres
 message("-- Check for Ceres")
 find_package(Ceres REQUIRED SuiteSparse)
@@ -184,6 +188,9 @@ else (SUITESPARSE_FOUND)
     "Please set SUITESPARSE_INCLUDE_DIR & SUITESPARSE_LIBRARY")
 endif (SUITESPARSE_FOUND)
 
+# Restore these values so we have them for the includes below.
+set(GLOG_INCLUDE_DIR ${TEMP_GID})
+set(GLOG_LIBRARY ${TEMP_GL})
 include_directories(
   include
   src
