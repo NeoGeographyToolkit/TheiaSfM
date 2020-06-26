@@ -195,7 +195,7 @@ add_definitions(-DSTATX_WITH_CERES)
 set(default_link_libraries ${default_link_libraries} ${CERES_LIBRARIES}
   ${SUITESPARSE_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 endif(STATX_WITH_CERES)
-add_library(statx STATIC ${statx_src})
+add_library(statx SHARED ${statx_src})
 
 target_link_libraries(statx ${default_link_libraries})
 

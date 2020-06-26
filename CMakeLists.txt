@@ -110,6 +110,8 @@ if (EIGEN_FOUND)
   message("-- Found Eigen version ${EIGEN_VERSION}: ${EIGEN_INCLUDE_DIRS}")
 endif (EIGEN_FOUND)
 
+find_package(FLANN REQUIRED)
+
 # Use a larger inlining threshold for Clang, since it hobbles Eigen,
 # resulting in an unreasonably slow version of the blas routines. The
 # -Qunused-arguments is needed because CMake passes the inline
@@ -223,8 +225,8 @@ include_directories(
   ${cimg_SOURCE_DIR}
   ${cimg_INCLUDE_DIR}
   ${easyexif_INCLUDE_DIR}
-  ${flann_SOURCE_DIR}
-  ${flann_SOURCE_DIR}/src/cpp
+#  ${flann_SOURCE_DIR}
+#  ${flann_SOURCE_DIR}/src/cpp
   ${gtest_SOURCE_DIR}/include
   ${gtest_SOURCE_DIR}
   ${optimo_SOURCE_DIR}
@@ -256,7 +258,8 @@ install(FILES ${THEIA_HDRS} DESTINATION include/theia)
 file(GLOB_RECURSE THEIA_INTERNAL_HDRS ${CMAKE_SOURCE_DIR}/src/theia/*.h)
 install(DIRECTORY src/theia/ DESTINATION include/theia FILES_MATCHING PATTERN "*.h")
 
-install(DIRECTORY libraries/ DESTINATION include/theia/libraries FILES_MATCHING PATTERN "*.h*")
+# This installs flann headers which is not desirable
+#install(DIRECTORY libraries/ DESTINATION include/theia/libraries FILES_MATCHING PATTERN "*.h*")
 
 # Add an uninstall target to remove all installed files.
 configure_file("${CMAKE_SOURCE_DIR}/cmake/uninstall.cmake.in"

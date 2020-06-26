@@ -12,7 +12,7 @@ add_subdirectory(cimg)
 add_subdirectory(easyexif)
 
 # Flann for fast approximate nearest neighbor searches.
-add_subdirectory(flann)
+#add_subdirectory(flann)
 
 # Add Optimo
 add_subdirectory(optimo)

@@ -5,7 +5,7 @@ set(visual_sfm_sources
   FeaturePoints.cpp
   MatchFile.cpp)
 
-add_library(visual_sfm STATIC ${visual_sfm_sources})
+add_library(visual_sfm SHARED ${visual_sfm_sources})
 if (NOT MSVC)
   add_definitions("-Wno-unused-result")
 endif (NOT MSVC)
