@@ -8,6 +8,7 @@ target_link_libraries(compute_two_view_geometry theia ${GFLAGS_LIBRARIES} ${GLOG
 # Tools for building SfM models
 add_executable(build_reconstruction build_reconstruction.cc)
 target_link_libraries(build_reconstruction theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
+install(TARGETS build_reconstruction RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_executable(build_1dsfm_reconstruction build_1dsfm_reconstruction.cc)
 target_link_libraries(build_1dsfm_reconstruction theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
@@ -18,6 +19,7 @@ target_link_libraries(calibrate_camera_intrinsics theia ${GFLAGS_LIBRARIES} ${GL
 add_executable(undistort_images undistort_images.cc)
 target_link_libraries(undistort_images theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 
+# This fails to build
 # # Reconstruction visualization.
 # find_package(OpenGL REQUIRED)
 # if (NOT MSVC)
@@ -78,6 +80,7 @@ target_link_libraries(export_colmap_files theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRA
 
 add_executable(export_to_nvm_file export_to_nvm_file.cc)
 target_link_libraries(export_to_nvm_file theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
+install(TARGETS export_to_nvm_file RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_executable(convert_nvm_file convert_nvm_file.cc)
 target_link_libraries(convert_nvm_file theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
