@@ -18,34 +18,34 @@ target_link_libraries(calibrate_camera_intrinsics theia ${GFLAGS_LIBRARIES} ${GL
 add_executable(undistort_images undistort_images.cc)
 target_link_libraries(undistort_images theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 
-# Reconstruction visualization.
-find_package(OpenGL REQUIRED)
-if (NOT MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-else (NOT MSVC)
-  find_package(GLEW REQUIRED)
-  if (GLEW_FOUND)
-    message ("-- Found GLEW: ${GLEW_INCLUDE_DIRS}")
-  else (GLEW FOUND)
-    message (FATAL_ERROR "-- Can't find GLEW. Please set GLEW_INCLUDE_DIR & GLEW_LIBRARY")
-  endif (GLEW_FOUND)
-  include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLEW_INCLUDE_DIRS} )
-  list(APPEND EXTRA_GL_LIBRARIES ${GLEW_LIBRARY} ${GLEW_LIBRARIES})
-endif (NOT MSVC)
+# # Reconstruction visualization.
+# find_package(OpenGL REQUIRED)
+# if (NOT MSVC)
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+# else (NOT MSVC)
+#   find_package(GLEW REQUIRED)
+#   if (GLEW_FOUND)
+#     message ("-- Found GLEW: ${GLEW_INCLUDE_DIRS}")
+#   else (GLEW FOUND)
+#     message (FATAL_ERROR "-- Can't find GLEW. Please set GLEW_INCLUDE_DIR & GLEW_LIBRARY")
+#   endif (GLEW_FOUND)
+#   include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLEW_INCLUDE_DIRS} )
+#   list(APPEND EXTRA_GL_LIBRARIES ${GLEW_LIBRARY} ${GLEW_LIBRARIES})
+# endif (NOT MSVC)
 
-find_package(GLUT REQUIRED)
-if (GLUT_FOUND)
-  message ("-- Found GLUT: ${GLUT_INCLUDE_DIR}")
-else (GLUT FOUND)
-  message (FATAL_ERROR "-- Can't find GLUT. Please set GLUT_INCLUDE_DIR & GLUT_LIBRARY")
-endif (GLUT_FOUND)
-include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIR} )
-list(APPEND EXTRA_GL_LIBRARIES ${GLUT_LIBRARIES})
+# find_package(GLUT REQUIRED)
+# if (GLUT_FOUND)
+#   message ("-- Found GLUT: ${GLUT_INCLUDE_DIR}")
+# else (GLUT FOUND)
+#   message (FATAL_ERROR "-- Can't find GLUT. Please set GLUT_INCLUDE_DIR & GLUT_LIBRARY")
+# endif (GLUT_FOUND)
+# include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIR} )
+# list(APPEND EXTRA_GL_LIBRARIES ${GLUT_LIBRARIES})
 
-add_executable(view_reconstruction view_reconstruction.cc)
-target_link_libraries(view_reconstruction theia ${GFLAGS_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${EXTRA_GL_LIBRARIES})
+# add_executable(view_reconstruction view_reconstruction.cc)
+# target_link_libraries(view_reconstruction theia ${GFLAGS_LIBRARIES}
+#   ${OPENGL_LIBRARIES}
+#   ${EXTRA_GL_LIBRARIES})
 
 # Useful tools for analyzing reconstructions.
 add_executable(compute_reconstruction_statistics compute_reconstruction_statistics.cc)

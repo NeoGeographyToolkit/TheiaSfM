@@ -46,31 +46,32 @@ endif()
 project(THEIA C CXX)
 include_directories(${PROJECT_SOURCE_DIR})
 
-# Set up the git hook to make Gerrit Change-Id: lines in commit messages.
-set (LOCAL_GIT_DIRECTORY)
-if (EXISTS ${CMAKE_SOURCE_DIR}/.git)
-  # .git directory can be found on Unix based system, or on Windows with
-  # Git Bash (shipped with msysgit)
-  set (LOCAL_GIT_DIRECTORY ${CMAKE_SOURCE_DIR}/.git)
-else (EXISTS ${CMAKE_SOURCE_DIR}/.git)
-endif (EXISTS ${CMAKE_SOURCE_DIR}/.git)
+# Turn this off as it is failing recently
+# # Set up the git hook to make Gerrit Change-Id: lines in commit messages.
+# set (LOCAL_GIT_DIRECTORY)
+# if (EXISTS ${CMAKE_SOURCE_DIR}/.git)
+#   # .git directory can be found on Unix based system, or on Windows with
+#   # Git Bash (shipped with msysgit)
+#   set (LOCAL_GIT_DIRECTORY ${CMAKE_SOURCE_DIR}/.git)
+# else (EXISTS ${CMAKE_SOURCE_DIR}/.git)
+# endif (EXISTS ${CMAKE_SOURCE_DIR}/.git)
 
-if (EXISTS ${LOCAL_GIT_DIRECTORY})
-  if (NOT EXISTS ${LOCAL_GIT_DIRECTORY}/hooks/commit-msg)
-    # Download the hook only if it is not already present. We borrow the hook
-    # hosted by Ceres because it is not specific to the project.
-    file(DOWNLOAD http://www.theia-sfm.org/_static/commit-msg
-         ${CMAKE_BINARY_DIR}/commit-msg)
+# if (EXISTS ${LOCAL_GIT_DIRECTORY})
+#   if (NOT EXISTS ${LOCAL_GIT_DIRECTORY}/hooks/commit-msg)
+#     # Download the hook only if it is not already present. We borrow the hook
+#     # hosted by Ceres because it is not specific to the project.
+#     file(DOWNLOAD http://www.theia-sfm.org/_static/commit-msg
+#          ${CMAKE_BINARY_DIR}/commit-msg)
 
-    # Make the downloaded file executable, since it is not by default.
-    file(COPY ${CMAKE_BINARY_DIR}/commit-msg
-         DESTINATION ${LOCAL_GIT_DIRECTORY}/hooks/
-         FILE_PERMISSIONS
-           OWNER_READ OWNER_WRITE OWNER_EXECUTE
-           GROUP_READ GROUP_WRITE GROUP_EXECUTE
-           WORLD_READ WORLD_EXECUTE)
-  endif (NOT EXISTS ${LOCAL_GIT_DIRECTORY}/hooks/commit-msg)
-endif (EXISTS ${LOCAL_GIT_DIRECTORY})
+#     # Make the downloaded file executable, since it is not by default.
+#     file(COPY ${CMAKE_BINARY_DIR}/commit-msg
+#          DESTINATION ${LOCAL_GIT_DIRECTORY}/hooks/
+#          FILE_PERMISSIONS
+#            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+#            GROUP_READ GROUP_WRITE GROUP_EXECUTE
+#            WORLD_READ WORLD_EXECUTE)
+#   endif (NOT EXISTS ${LOCAL_GIT_DIRECTORY}/hooks/commit-msg)
+# endif (EXISTS ${LOCAL_GIT_DIRECTORY})
 
 # ==============================================================================
 # Additional cmake find modules
@@ -146,6 +147,14 @@ else (GLOG_FOUND)
   message(FATAL_ERROR "Can't find Google Logging. Please set GLOG_INCLUDE_DIR & "
     "GLOG_LIBRARY")
 endif (GLOG_FOUND)
+
+# OpenMP
+FIND_PACKAGE(OpenMP REQUIRED)
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
 
 # Ceres
 message("-- Check for Ceres")

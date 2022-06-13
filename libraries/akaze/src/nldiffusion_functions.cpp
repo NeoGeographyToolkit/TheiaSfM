@@ -237,8 +237,8 @@ void halfsample_image(const RowMatrixXf& src, RowMatrixXf& dst) {
     return;
   }
 
-  const double x_kernel_clamped_size = static_cast<int>(ceil(x_kernel_size));
-  const double y_kernel_clamped_size = static_cast<int>(ceil(y_kernel_size));
+  const int x_kernel_clamped_size = static_cast<int>(ceil(x_kernel_size));
+  const int y_kernel_clamped_size = static_cast<int>(ceil(y_kernel_size));
 
   // Set up precomputed factor matrices.
   Eigen::RowVectorXf x_kernel_mul(static_cast<int>(x_kernel_clamped_size)),
@@ -253,8 +253,9 @@ void halfsample_image(const RowMatrixXf& src, RowMatrixXf& dst) {
     // Compute the row resize first.
     const int y = static_cast<int>(y_kernel_size * i);
     y_kernel_mul(0) = 1 - (y_kernel_size * i - y);
-    y_kernel_mul(y_kernel_clamped_size - 1) -=
-        y_kernel_mul.sum() - y_kernel_size;
+    y_kernel_mul(y_kernel_clamped_size - 1) =
+      y_kernel_mul(y_kernel_clamped_size - 1) 
+      -(y_kernel_mul.sum() - y_kernel_size);
 
     temp_row =
         y_kernel_mul * src.block(y, 0, y_kernel_clamped_size, src.cols());
@@ -264,8 +265,9 @@ void halfsample_image(const RowMatrixXf& src, RowMatrixXf& dst) {
     for (int j = 0; j < dst.cols(); j++) {
       const int x = static_cast<int>(x_kernel_size * j);
       x_kernel_mul(0) = 1 - (x_kernel_size * j - x);
-      x_kernel_mul(x_kernel_clamped_size - 1) -=
-          x_kernel_mul.sum() - x_kernel_size;
+      x_kernel_mul(x_kernel_clamped_size - 1) =
+      x_kernel_mul(x_kernel_clamped_size - 1) -
+        (x_kernel_mul.sum() - x_kernel_size);
       dst(i, j) =
           x_kernel_mul.dot(temp_row.segment(x, x_kernel_clamped_size));
     }

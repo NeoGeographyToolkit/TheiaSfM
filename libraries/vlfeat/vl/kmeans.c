@@ -365,6 +365,8 @@ Elkan's while retaining a similar solution accuracy.
 #include "mathop.h"
 #include <string.h>
 
+#undef _OPENMP
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
