@@ -9,6 +9,13 @@ target_link_libraries(compute_two_view_geometry theia ${GFLAGS_LIBRARIES} ${GLOG
 add_executable(build_reconstruction build_reconstruction.cc)
 target_link_libraries(build_reconstruction theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 install(TARGETS build_reconstruction RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+if(APPLE)
+  set_target_properties(build_reconstruction PROPERTIES
+    INSTALL_RPATH "@loader_path;${MULTIVIEW_DEPS_DIR}/lib")
+elseif(UNIX) # Unix which is not Apple
+  set_target_properties(build_reconstruction PROPERTIES
+    INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
+endif()
 
 add_executable(build_1dsfm_reconstruction build_1dsfm_reconstruction.cc)
 target_link_libraries(build_1dsfm_reconstruction theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
@@ -80,6 +87,13 @@ target_link_libraries(export_colmap_files theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRA
 
 add_executable(export_to_nvm_file export_to_nvm_file.cc)
 target_link_libraries(export_to_nvm_file theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
+if(APPLE)
+  set_target_properties(export_to_nvm_file PROPERTIES
+    INSTALL_RPATH "@loader_path;${MULTIVIEW_DEPS_DIR}/lib")
+elseif(UNIX) # Unix which is not Apple
+  set_target_properties(export_to_nvm_file PROPERTIES
+    INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
+endif()
 install(TARGETS export_to_nvm_file RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_executable(convert_nvm_file convert_nvm_file.cc)
