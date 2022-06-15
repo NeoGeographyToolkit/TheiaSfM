@@ -46,6 +46,9 @@ endif()
 project(THEIA C CXX)
 include_directories(${PROJECT_SOURCE_DIR})
 
+# Otherwise Theia fails to build
+add_compile_options(-fPIC)
+
 # Turn this off as it is failing recently
 # # Set up the git hook to make Gerrit Change-Id: lines in commit messages.
 # set (LOCAL_GIT_DIRECTORY)
