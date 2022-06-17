@@ -65,22 +65,25 @@ bool WriteNVMFile(const std::string& nvm_filepath,
   const auto& view_ids = reconstruction.ViewIds();
   nvm_file << view_ids.size() << std::endl;
   std::unordered_map<ViewId, int> view_id_to_index;
-  std::unordered_map<ViewId, std::unordered_map<TrackId, int> >
+  std::unordered_map<ViewId, std::unordered_map<TrackId, int>>
       feature_index_mapping;
   // Output each camera.
+  bool printed_warning = false;
   for (const ViewId view_id : view_ids) {
     const int current_index = view_id_to_index.size();
     view_id_to_index[view_id] = current_index;
 
+    // It is is preferable to save camera poses to nvm even if the intrinsics cannot
+    // be saved, than not to save them at all.
     const View& view = *reconstruction.View(view_id);
     const Camera& camera = view.Camera();
-    if (camera.GetCameraIntrinsicsModelType() !=
-        CameraIntrinsicsModelType::PINHOLE) {
-      LOG(FATAL) << "Could not add camera " << view.Name()
-                 << " to the NVM output file because nvm files only "
-                    "support pinhole camera models. Please remove non-pinhole "
-                    "cameras from the reconstruction and try again.";
-      continue;
+    if (camera.GetCameraIntrinsicsModelType() != CameraIntrinsicsModelType::PINHOLE &&
+        !printed_warning) {
+      std::cout << "Camera " << view.Name()
+                << " is not pinhole, so its intrinsics won't be saved correctly in the "
+                << " NVM output file. Saving the poses however. Will not print more "
+                << "such warnings.\n";
+      printed_warning = true;
     }
 
     const Eigen::Quaterniond quat(camera.GetOrientationAsRotationMatrix());
@@ -88,10 +91,12 @@ bool WriteNVMFile(const std::string& nvm_filepath,
     nvm_file << view.Name() << " " << camera.FocalLength() << " " << quat.w()
              << " " << quat.x() << " " << quat.y() << " " << quat.z() << " "
              << position.x() << " " << position.y() << " " << position.z()
-             << " "
-             << camera.CameraIntrinsics()->GetParameter(
-                    PinholeCameraModel::RADIAL_DISTORTION_1)
-             << " 0" << std::endl;
+             << " ";
+    if (camera.GetCameraIntrinsicsModelType() == CameraIntrinsicsModelType::PINHOLE)
+      nvm_file << camera.CameraIntrinsics()->GetParameter(PinholeCameraModel::RADIAL_DISTORTION_1);
+    else
+      nvm_file << "0";
+    nvm_file << " 0" << std::endl;
 
     // Assign each feature in this view to a unique feature index (unique within
     // each image, not unique to the reconstruction).
