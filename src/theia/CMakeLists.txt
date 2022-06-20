@@ -221,7 +221,7 @@ set(THEIA_LIBRARY_DEPENDENCIES
   ${ROCKSDB_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
   akaze
-  flann_cpp
+  ${FLANN_LIBRARIES}
   statx
   stlplus3
   vlfeat
@@ -232,7 +232,7 @@ set(THEIA_LIBRARY_SOURCE
   ${THEIA_SRC}
   ${THEIA_HDRS})
 
-add_library(theia ${THEIA_LIBRARY_SOURCE})
+add_library(theia SHARED ${THEIA_LIBRARY_SOURCE})
 set_target_properties(theia PROPERTIES
   VERSION ${THEIA_VERSION}
   SOVERSION ${THEIA_VERSION_MAJOR}

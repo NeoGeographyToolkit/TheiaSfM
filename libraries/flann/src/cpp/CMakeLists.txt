@@ -70,8 +70,8 @@ if (USE_MPI AND HDF5_IS_PARALLEL)
     add_executable(flann_mpi_client flann/mpi/flann_mpi_client.cpp)
     target_link_libraries(flann_mpi_client flann_cpp ${HDF5_LIBRARIES} ${MPI_LIBRARIES} ${Boost_LIBRARIES})
 
-    install (TARGETS flann_mpi_client flann_mpi_server
-        DESTINATION bin)
+#     install (TARGETS flann_mpi_client flann_mpi_server
+#         DESTINATION bin)
 endif()
 
 
@@ -101,44 +101,44 @@ if (BUILD_C_BINDINGS)
     )
 endif()
 
-if(WIN32)
-if (BUILD_C_BINDINGS AND BUILD_MATLAB_BINDINGS)
-    install (
-        TARGETS flann
-        RUNTIME DESTINATION share/flann/matlab
-    )
-endif()
-endif(WIN32)
+# if(WIN32)
+# if (BUILD_C_BINDINGS AND BUILD_MATLAB_BINDINGS)
+#     install (
+#         TARGETS flann
+#         RUNTIME DESTINATION share/flann/matlab
+#     )
+# endif()
+# endif(WIN32)
 
 
-install (
-    TARGETS flann_cpp flann_cpp_s
-    EXPORT TheiaExport
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib${LIB_SUFFIX}
-    ARCHIVE DESTINATION lib${LIB_SUFFIX}
-)
+# install (
+#     TARGETS flann_cpp flann_cpp_s
+#     EXPORT TheiaExport
+#     RUNTIME DESTINATION bin
+#     LIBRARY DESTINATION lib${LIB_SUFFIX}
+#     ARCHIVE DESTINATION lib${LIB_SUFFIX}
+# )
 
-if (BUILD_CUDA_LIB)
-    install (
-        TARGETS flann_cuda flann_cuda_s
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION ${FLANN_LIB_INSTALL_DIR}
-        ARCHIVE DESTINATION ${FLANN_LIB_INSTALL_DIR}
-    )
-endif()
+# if (BUILD_CUDA_LIB)
+#     install (
+#         TARGETS flann_cuda flann_cuda_s
+#         RUNTIME DESTINATION bin
+#         LIBRARY DESTINATION ${FLANN_LIB_INSTALL_DIR}
+#         ARCHIVE DESTINATION ${FLANN_LIB_INSTALL_DIR}
+#     )
+# endif()
 
-if (BUILD_C_BINDINGS)
-    install (
-        TARGETS flann flann_s
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION ${FLANN_LIB_INSTALL_DIR}
-        ARCHIVE DESTINATION ${FLANN_LIB_INSTALL_DIR}
-    )
-endif()
+# if (BUILD_C_BINDINGS)
+#     install (
+#         TARGETS flann flann_s
+#         RUNTIME DESTINATION bin
+#         LIBRARY DESTINATION ${FLANN_LIB_INSTALL_DIR}
+#         ARCHIVE DESTINATION ${FLANN_LIB_INSTALL_DIR}
+#     )
+# endif()
 
-install (
-    DIRECTORY flann
-    DESTINATION include
-    FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
-)
+# install (
+#     DIRECTORY flann
+#     DESTINATION include
+#     FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+# )

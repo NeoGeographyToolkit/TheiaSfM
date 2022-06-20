@@ -26,14 +26,14 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.0)
     )
     install(TARGETS cereal EXPORT cereal
         DESTINATION lib) # ignored
-    install(EXPORT cereal FILE cereal-config.cmake
-        DESTINATION share/cmake/cereal)
-    install(DIRECTORY include/cereal DESTINATION include)
+    #install(EXPORT cereal FILE cereal-config.cmake
+    #    DESTINATION share/cmake/cereal)
+    #install(DIRECTORY include/cereal DESTINATION include)
 endif()
 
-if(JUST_INSTALL_CEREAL)
+#if(JUST_INSTALL_CEREAL)
     return()
-endif()
+#endif()
 
 include_directories(./include)
 

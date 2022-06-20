@@ -252,6 +252,8 @@ include_directories(
 # as system headers.
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
+find_package(FLANN REQUIRED)
+
 # build Third party libraries included in distro.
 add_subdirectory(libraries)
 include_directories(
@@ -261,8 +263,8 @@ include_directories(
   ${akaze_INCLUDE_DIR}
   ${cereal_SOURCE_DIR}
   ${cereal_SOURCE_DIR}/include
-  ${flann_SOURCE_DIR}
-  ${flann_SOURCE_DIR}/src/cpp
+#  ${flann_SOURCE_DIR}
+#  ${flann_SOURCE_DIR}/src/cpp
   ${gtest_SOURCE_DIR}/include
   ${gtest_SOURCE_DIR}
   ${optimo_SOURCE_DIR}
@@ -286,15 +288,15 @@ if (BUILD_DOCUMENTATION)
   add_subdirectory(docs)
 endif (BUILD_DOCUMENTATION)
 
-# ---------------- Install commands ----------------- #
-# Install the .h files
-file(GLOB THEIA_HDRS ${CMAKE_SOURCE_DIR}/include/theia/*.h)
-install(FILES ${THEIA_HDRS} DESTINATION include/theia)
+# # ---------------- Install commands ----------------- #
+# # Install the .h files
+# file(GLOB THEIA_HDRS ${CMAKE_SOURCE_DIR}/include/theia/*.h)
+# install(FILES ${THEIA_HDRS} DESTINATION include/theia)
 
-file(GLOB_RECURSE THEIA_INTERNAL_HDRS ${CMAKE_SOURCE_DIR}/src/theia/*.h)
-install(DIRECTORY src/theia/ DESTINATION include/theia FILES_MATCHING PATTERN "*.h")
+# file(GLOB_RECURSE THEIA_INTERNAL_HDRS ${CMAKE_SOURCE_DIR}/src/theia/*.h)
+# install(DIRECTORY src/theia/ DESTINATION include/theia FILES_MATCHING PATTERN "*.h")
 
-install(DIRECTORY libraries/ DESTINATION include/theia/libraries FILES_MATCHING PATTERN "*.h*")
+# install(DIRECTORY libraries/ DESTINATION include/theia/libraries FILES_MATCHING PATTERN "*.h*")
 
 # Add an uninstall target to remove all installed files.
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/uninstall.cmake.in"
@@ -304,19 +306,19 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/uninstall.cmake.in"
 add_custom_target(uninstall
                   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake/uninstall.cmake)
 
-# Set up install directories. INCLUDE_INSTALL_DIR, LIB_INSTALL_DIR and
-# CMAKECONFIG_INSTALL_DIR must not be absolute paths.
-if (WIN32)
-  set(INCLUDE_INSTALL_DIR Include)
-  set(LIB_INSTALL_DIR Lib)
-  set(CMAKECONFIG_INSTALL_DIR CMake)
-  set(RELATIVE_CMAKECONFIG_INSTALL_DIR CMake)
-else ()
-  set(INCLUDE_INSTALL_DIR include)
-  set(LIB_INSTALL_DIR lib)
-  set(CMAKECONFIG_INSTALL_DIR share/Theia)
-  set(RELATIVE_CMAKECONFIG_INSTALL_DIR share/Theia)
-endif ()
+# # Set up install directories. INCLUDE_INSTALL_DIR, LIB_INSTALL_DIR and
+# # CMAKECONFIG_INSTALL_DIR must not be absolute paths.
+# if (WIN32)
+#   set(INCLUDE_INSTALL_DIR Include)
+#   set(LIB_INSTALL_DIR Lib)
+#   set(CMAKECONFIG_INSTALL_DIR CMake)
+#   set(RELATIVE_CMAKECONFIG_INSTALL_DIR CMake)
+# else ()
+#   set(INCLUDE_INSTALL_DIR include)
+#   set(LIB_INSTALL_DIR lib)
+#   set(CMAKECONFIG_INSTALL_DIR share/Theia)
+#   set(RELATIVE_CMAKECONFIG_INSTALL_DIR share/Theia)
+# endif ()
 
 # # This "exports" all targets which have been put into the export set
 # # "TheiaExport". This means that CMake generates a file with the given

@@ -8,8 +8,8 @@ add_subdirectory(akaze)
 # Cereal for portable IO.
 add_subdirectory(cereal)
 
-# Flann for fast approximate nearest neighbor searches.
-add_subdirectory(flann)
+# # Flann for fast approximate nearest neighbor searches.
+# add_subdirectory(flann)
 
 # Add Optimo.
 add_subdirectory(optimo)
