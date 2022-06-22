@@ -108,6 +108,9 @@ set(THEIA_ABI_VERSION 0.7.0)
 # THEIA data directory
 add_definitions(-DTHEIA_DATA_DIR="${CMAKE_SOURCE_DIR}/data")
 
+# Headers for optimo
+set(OPTIMO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/optimo")
+
 # Eigen
 set(MIN_EIGEN_VERSION 3.2.0)
 find_package(Eigen ${MIN_EIGEN_VERSION} REQUIRED)
