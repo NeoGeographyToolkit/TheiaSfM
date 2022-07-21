@@ -86,8 +86,12 @@ bool WriteNVMFile(const std::string& nvm_filepath,
       printed_warning = true;
     }
 
+    // World-to-camera rotation
     const Eigen::Quaterniond quat(camera.GetOrientationAsRotationMatrix());
+
+    // Camera center in world coordinates
     const Eigen::Vector3d position(camera.GetPosition());
+    
     nvm_file << view.Name() << " " << camera.FocalLength() << " " << quat.w()
              << " " << quat.x() << " " << quat.y() << " " << quat.z() << " "
              << position.x() << " " << position.y() << " " << position.z()
