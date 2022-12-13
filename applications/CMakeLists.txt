@@ -11,7 +11,7 @@ target_link_libraries(build_reconstruction theia ${GFLAGS_LIBRARIES} ${GLOG_LIBR
 install(TARGETS build_reconstruction RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(APPLE)
   set_target_properties(build_reconstruction PROPERTIES
-    INSTALL_RPATH "@loader_path;${MULTIVIEW_DEPS_DIR}/lib")
+    INSTALL_RPATH "@loader_path;@loader_path/../lib;${MULTIVIEW_DEPS_DIR}/lib")
 elseif(UNIX) # Unix which is not Apple
   set_target_properties(build_reconstruction PROPERTIES
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
@@ -89,7 +89,7 @@ add_executable(export_to_nvm_file export_to_nvm_file.cc)
 target_link_libraries(export_to_nvm_file theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 if(APPLE)
   set_target_properties(export_to_nvm_file PROPERTIES
-    INSTALL_RPATH "@loader_path;${MULTIVIEW_DEPS_DIR}/lib")
+    INSTALL_RPATH "@loader_path;@loader_path/../lib;${MULTIVIEW_DEPS_DIR}/lib")
 elseif(UNIX) # Unix which is not Apple
   set_target_properties(export_to_nvm_file PROPERTIES
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
@@ -100,7 +100,7 @@ add_executable(export_reconstruction_to_vw export_reconstruction_to_vw.cc)
 target_link_libraries(export_reconstruction_to_vw theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 if(APPLE)
   set_target_properties(export_reconstruction_to_vw PROPERTIES
-    INSTALL_RPATH "@loader_path;${MULTIVIEW_DEPS_DIR}/lib")
+    INSTALL_RPATH "@loader_path;@loader_path/../lib;${MULTIVIEW_DEPS_DIR}/lib")
 elseif(UNIX) # Unix which is not Apple
   set_target_properties(export_reconstruction_to_vw PROPERTIES
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
@@ -111,7 +111,7 @@ add_executable(export_matches_file_to_vw export_matches_file_to_vw.cc)
 target_link_libraries(export_matches_file_to_vw theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 if(APPLE)
   set_target_properties(export_matches_file_to_vw PROPERTIES
-    INSTALL_RPATH "@loader_path;${MULTIVIEW_DEPS_DIR}/lib")
+    INSTALL_RPATH "@loader_path;@loader_path/../lib;${MULTIVIEW_DEPS_DIR}/lib")
 elseif(UNIX) # Unix which is not Apple
   set_target_properties(export_matches_file_to_vw PROPERTIES
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
