@@ -11,7 +11,7 @@ target_link_libraries(build_reconstruction theia ${GFLAGS_LIBRARIES} ${GLOG_LIBR
 install(TARGETS build_reconstruction RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(APPLE)
   set_target_properties(build_reconstruction PROPERTIES
-    INSTALL_RPATH "@loader_path;@loader_path/../lib;${MULTIVIEW_DEPS_DIR}/lib")
+    INSTALL_RPATH "@loader_path;@loader_path/../lib") # ${MULTIVIEW_DEPS_DIR}/lib is already in 
 elseif(UNIX) # Unix which is not Apple
   set_target_properties(build_reconstruction PROPERTIES
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
