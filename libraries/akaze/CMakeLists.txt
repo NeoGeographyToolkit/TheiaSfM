@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 project( akaze )
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+set(CMAKE_MACOSX_RPATH 1) # to make OSX warning disappear
+
 OPTION(OPENMP "Enable multithreading (requires OpenMP)" OFF)
 
 # Where to output binaries and libraries
@@ -101,7 +103,11 @@ SET(AKAZE_SRCS
     timer/timer.cpp)
 ADD_LIBRARY(akaze ${AKAZE_SRCS})
 TARGET_LINK_LIBRARIES(akaze ${EIGEN_LIBRARIES} ${CIMG_LIBRARIES})
-
+if(APPLE)
+  set_target_properties(akaze PROPERTIES
+    INSTALL_RPATH "@loader_path;@loader_path/../lib") # ${MULTIVIEW_DEPS_DIR}/lib"
+ endif()
+  
 # Demo program extracting akaze features.
 ADD_EXECUTABLE(akaze_features akaze_features.cpp)
 TARGET_LINK_LIBRARIES(akaze_features akaze ${CIMG_LIBRARIES})
