@@ -228,6 +228,13 @@ set(THEIA_LIBRARY_DEPENDENCIES
   visual_sfm
 )
 
+# Custom fix for OSX.
+# TODO(oalexan1): Find a more robust way of addressing this.
+if (APPLE)
+    list(APPEND THEIA_LIBRARY_DEPENDENCIES
+        "${MULTIVIEW_DEPS_DIR}/lib/liblz4.dylib")
+endif()
+
 set(THEIA_LIBRARY_SOURCE
   ${THEIA_SRC}
   ${THEIA_HDRS})
