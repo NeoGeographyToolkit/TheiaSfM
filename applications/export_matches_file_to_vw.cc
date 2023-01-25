@@ -45,7 +45,7 @@
 
 DEFINE_string(theia_matches_file, "",
               "Input Theia binary match file.");
-DEFINE_string(output_prefix, "", "Output files will be written with this folder/prefix.");
+DEFINE_string(vw_output_prefix, "", "Output files will be written with this folder/prefix.");
 DEFINE_int32(min_num_matches, 30,
              "Don't generate files with fewer matches than this.");
 
