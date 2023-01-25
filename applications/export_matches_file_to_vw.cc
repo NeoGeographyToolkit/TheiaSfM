@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
     input_archive(view_names, camera_intrinsics_prior, matches);
   }
 
-  CHECK(theia::WriteAllVwMatchFiles(FLAGS_output_prefix, view_names, matches,
+  CHECK(theia::WriteAllVwMatchFiles(FLAGS_vw_output_prefix, view_names, matches,
                                     FLAGS_min_num_matches))
     << "Could not write VW matches file.";
   

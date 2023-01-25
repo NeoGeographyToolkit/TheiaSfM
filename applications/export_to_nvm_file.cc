@@ -38,7 +38,7 @@
 
 #include <string>
 
-DEFINE_string(output_nvm_file, "", "Output nmv file.");
+DEFINE_string(output_nvm_file, "", "Output nvm file.");
 DEFINE_string(input_reconstruction_file, "",
               "Input reconstruction file in binary format.");
 
