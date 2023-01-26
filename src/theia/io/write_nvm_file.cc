@@ -58,6 +58,9 @@ bool WriteNVMFile(const std::string& nvm_filepath,
     return false;
   }
 
+  // Save with the highest precision
+  nvm_file.precision(17);
+  
   // Output the NVM header.
   nvm_file << "NVM_V3 " << std::endl << std::endl;
 

@@ -46,12 +46,13 @@ int main(int argc, char* argv[]) {
   google::InitGoogleLogging(argv[0]);
   THEIA_GFLAGS_NAMESPACE::ParseCommandLineFlags(&argc, &argv, true);
 
-  // Load the reconstuction.
+  // Load the reconstruction
   theia::Reconstruction reconstruction;
   CHECK(theia::ReadReconstruction(FLAGS_input_reconstruction_file,
                                   &reconstruction))
-      << "Could not read Reconstruction file.";
+      << "Could not read the reconstruction file.";
 
+  std::cout << "Writing: " << FLAGS_output_nvm_file << std::endl;
   CHECK(theia::WriteNVMFile(FLAGS_output_nvm_file, reconstruction))
       << "Could not write NVM file.";
 

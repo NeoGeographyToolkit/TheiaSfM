@@ -45,10 +45,8 @@ DEFINE_string(reconstruction, "", "Theia Reconstruction file.");
 DEFINE_string(images, "",
               "A filepath wildcard specifying all images that were used in the "
               "reconstruction.");
-DEFINE_string(output_directory, "",
-              "A directory to store the necessary pmvs files.");
-DEFINE_int32(num_threads, 1, "Number of threads used in PMVS.");
-
+DEFINE_string(output_directory, "", "Output directory.");
+DEFINE_int32(num_threads, 1, "Number of threads to use.");
 
 namespace theia {
 void CreateDirectoryIfDoesNotExist(const std::string& directory) {
@@ -70,60 +68,64 @@ int WriteCamerasForVW(const theia::Reconstruction& reconstruction) {
 
   int current_image_index = 0;
   for (int i = 0; i < image_files.size(); i++) {
+
     // Fetch the view ID for this image
     std::string image_name;
     CHECK(theia::GetFilenameFromFilepath(image_files[i], true, &image_name));
+    
     const theia::ViewId view_id = reconstruction.ViewIdFromName(image_name);
     if (view_id == theia::kInvalidViewId) {
       continue;
     }
 
-    LOG(INFO) << "Exporting parameters for image: " << image_name;
+    std::cout << "Exporting parameters for image: " << image_name << "\n";
 
     // Generate file name for this image
-
     // Write the camera projection matrix.
     const std::string text_path = stlplus::create_filespec(FLAGS_output_directory, 
                                                            image_name + ".tsai");
-    LOG(INFO) << "Writing file: " << text_path;
-    //const std::string txt_file = theia::StringPrintf(
-    //    "%s/%08d.txt", FLAGS_output_directory.c_str(), current_image_index);
+    std::cout << "Writing: " << text_path << "\n";
     
     // Get camera information
     const theia::Camera camera = reconstruction.View(view_id)->Camera();
     
     // Write the pinhole camera model to an ASP compatible text file
     std::ofstream ofs(text_path);
+    ofs.precision(17);
     
     // Focal length x then y
-    ofs << "fu = " << camera.FocalLength() << std::endl;
-    ofs << "fv = " <<camera.FocalLength() << std::endl;
+    ofs << "fu = " << camera.FocalLength() << "\n";
+    ofs << "fv = " <<camera.FocalLength() << "\n";
     
     // Center point x then y
-    ofs << "cu = " << camera.PrincipalPointX() << std::endl;
-    ofs << "cv = " << camera.PrincipalPointY() << std::endl;
+    ofs << "cu = " << camera.PrincipalPointX() << "\n";
+    ofs << "cv = " << camera.PrincipalPointY() << "\n";
     
     // Some pixel direction vectors that VW expects
-    ofs << "u_direction = 1  0  0" << std::endl;
-    ofs << "v_direction = 0  1  0" << std::endl;
-    ofs << "w_direction = 0  0  1" << std::endl;
+    ofs << "u_direction = 1  0  0" << "\n";
+    ofs << "v_direction = 0  1  0" << "\n";
+    ofs << "w_direction = 0  0  1" << "\n";
     
     // Location C
-    ofs << "C = " << camera.GetPosition().format(unaligned) << std::endl;
+    ofs << "C = " << camera.GetPosition().format(unaligned) << "\n";
     
     // Rotation matrix R
-    ofs << "R = " << camera.GetOrientationAsRotationMatrix().transpose().format(unaligned) << std::endl;
+    ofs << "R = " << camera.GetOrientationAsRotationMatrix().transpose().format(unaligned) << "\n";
 
     // Distortion parameters
     if (camera.GetCameraIntrinsicsModelType() == CameraIntrinsicsModelType::PINHOLE) {
-      ofs << "k1 = " << camera.CameraIntrinsics()->GetParameter(PinholeCameraModel::RADIAL_DISTORTION_1) << std::endl;
-      ofs << "k2 = " << camera.CameraIntrinsics()->GetParameter(PinholeCameraModel::RADIAL_DISTORTION_2) << std::endl;
+      ofs << "k1 = "
+          << camera.CameraIntrinsics()->GetParameter(PinholeCameraModel::RADIAL_DISTORTION_1)
+          << "\n";
+      ofs << "k2 = "
+          << camera.CameraIntrinsics()->GetParameter(PinholeCameraModel::RADIAL_DISTORTION_2)
+          << "\n";
     } else {
-      ofs << "k1 = " << 0 << std::endl;
-      ofs << "k2 = " << 0 << std::endl;
+      ofs << "k1 = " << 0 << "\n";
+      ofs << "k2 = " << 0 << "\n";
     }
-    ofs << "p1 = 0" << std::endl;
-    ofs << "p2 = 0" << std::endl;
+    ofs << "p1 = 0" << "\n";
+    ofs << "p2 = 0" << "\n";
     
     ofs.close();
 
@@ -144,7 +146,7 @@ int main(int argc, char* argv[]) {
 
   theia::Reconstruction reconstruction;
   CHECK(theia::ReadReconstruction(FLAGS_reconstruction, &reconstruction))
-      << "Could not read Reconstruction files.";
+      << "Could not read the reconstruction file.";
 
   theia::WriteCamerasForVW(reconstruction);
 

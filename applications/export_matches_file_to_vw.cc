@@ -43,14 +43,14 @@
 
 #include <string>
 
-DEFINE_string(theia_matches_file, "",
-              "Input Theia binary match file.");
+DEFINE_string(theia_match_dir, "",
+              "Input directory having Theia matches.");
 DEFINE_string(vw_output_prefix, "", "Output files will be written with this folder/prefix.");
 DEFINE_int32(min_num_matches, 30,
              "Don't generate files with fewer matches than this.");
 
 namespace theia {
-/// Return the name minus the extension
+// Return the name minus the extension
 std::string strip_ext(const std::string &name) {
   size_t pos = name.rfind('.');
   if (pos == std::string::npos)
@@ -58,8 +58,8 @@ std::string strip_ext(const std::string &name) {
   return name.substr(0,pos);
 }
 
-/// Generate a VW style match file name
-/// - Returns true if the order was swapped
+// Generate a VW style match file name
+// Returns true if the order was swapped
 bool make_vw_filename(std::string const& out_prefix,
                       std::string const& input_file1,
                       std::string const& input_file2,
@@ -85,11 +85,8 @@ bool make_vw_filename(std::string const& out_prefix,
   return swap;
 }
 
-
-
-
-/// Only the location is actually filled in, the rest of the fields
-///  get dummy values.
+// Only the location is actually filled in, the rest of the fields
+// get dummy values.
 inline void write_vw_ip_record(std::ofstream &f, const theia::Feature & ip) {
   float        dummy_f      = 0.0;
   bool         dummy_bool   = false;
@@ -114,7 +111,7 @@ inline void write_vw_ip_record(std::ofstream &f, const theia::Feature & ip) {
     f.write((char*)&(dummy_f), sizeof(float));
 }
 
-/// Write a single VW compatible binary file
+// Write a single VW compatible binary file
 bool write_vw_binary_match_file(const std::string   & matches_file,
                                 const theia::ImagePairMatch& matches,
                                 const bool swap) {
@@ -139,8 +136,6 @@ bool write_vw_binary_match_file(const std::string   & matches_file,
       write_vw_ip_record(matches_writer, matches.correspondences[i].feature2);
     else
       write_vw_ip_record(matches_writer, matches.correspondences[i].feature1);
-    //std::cout << "Feature 1: " << matches.correspondences[i].feature1.x() << ", " 
-    //                           << matches.correspondences[i].feature1.y() << std::endl;
   }
   // Write all IP's for the second image
   for (size_t i=0; i<num_matches; ++i) {
@@ -154,7 +149,7 @@ bool write_vw_binary_match_file(const std::string   & matches_file,
   return true;
 }
 
-/// Convert all the image match information into multiple VW match files.
+// Convert all the image match information into multiple VW match files.
 bool WriteAllVwMatchFiles(
     const std::string& output_prefix,
     const std::vector<std::string>& view_names,
@@ -181,27 +176,30 @@ int main(int argc, char* argv[]) {
   google::InitGoogleLogging(argv[0]);
   THEIA_GFLAGS_NAMESPACE::ParseCommandLineFlags(&argc, &argv, true);
 
-  std::vector<theia::ImagePairMatch> matches;
-  std::vector<std::string> view_names;
-  std::vector<theia::CameraIntrinsicsPrior> camera_intrinsics_prior;
+  // Initialize the features and matches database.
+  std::unique_ptr<theia::FeaturesAndMatchesDatabase> features_and_matches_database
+    (new theia::RocksDbFeaturesAndMatchesDatabase(FLAGS_theia_match_dir));
 
-  // Return false if the file cannot be opened.
-  std::ifstream matches_reader(FLAGS_theia_matches_file, std::ios::in | std::ios::binary);
-  if (!matches_reader.is_open()) {
-    LOG(ERROR) << "Could not open the matches file: " << FLAGS_theia_matches_file
-               << " for reading.";
-    return false;
+  // Add the matches
+  const auto match_keys = features_and_matches_database->ImageNamesOfMatches();
+  std::cout << "Loaded " << match_keys.size() << " pairs of matches.\n";
+  for (const auto& match_key: match_keys) {
+    const theia::ImagePairMatch& match =
+        features_and_matches_database->GetImagePairMatch(match_key.first,
+                                                         match_key.second);
+
+    const size_t num_matches = match.correspondences.size();
+    if (num_matches < FLAGS_min_num_matches) {
+      std::cout << "Too few matches loaded, will not save them.\n";
+      continue; // Skip pairs with too few IP
+    }
+    
+    std::string this_file;
+    bool swap = theia::make_vw_filename(FLAGS_vw_output_prefix,
+                                        match_key.first, match_key.second, this_file);
+    if (!write_vw_binary_match_file(this_file, match, swap))
+      std::cout << "Failed to write match file: " << this_file << std::endl;
   }
 
-  // Make sure that Cereal is able to finish executing before returning.
-  {
-    cereal::PortableBinaryInputArchive input_archive(matches_reader);
-    input_archive(view_names, camera_intrinsics_prior, matches);
-  }
-
-  CHECK(theia::WriteAllVwMatchFiles(FLAGS_vw_output_prefix, view_names, matches,
-                                    FLAGS_min_num_matches))
-    << "Could not write VW matches file.";
-  
   return 0;
 }
