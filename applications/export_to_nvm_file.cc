@@ -52,7 +52,6 @@ int main(int argc, char* argv[]) {
                                   &reconstruction))
       << "Could not read the reconstruction file.";
 
-  std::cout << "Writing: " << FLAGS_output_nvm_file << std::endl;
   CHECK(theia::WriteNVMFile(FLAGS_output_nvm_file, reconstruction))
       << "Could not write NVM file.";
 

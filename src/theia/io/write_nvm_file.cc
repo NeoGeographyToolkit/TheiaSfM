@@ -51,22 +51,37 @@ namespace theia {
 // software packages.
 bool WriteNVMFile(const std::string& nvm_filepath,
                   const Reconstruction& reconstruction) {
-  std::ofstream nvm_file;
-  nvm_file.open(nvm_filepath.c_str());
-  if (!nvm_file.is_open()) {
+  std::cout << "Writing nvm: " << nvm_filepath << std::endl;
+  std::ofstream nvm_fh;
+  nvm_fh.open(nvm_filepath.c_str());
+  if (!nvm_fh.is_open()) {
     LOG(WARNING) << "Could not open nvm file for writing: " << nvm_filepath;
     return false;
   }
-
   // Save with the highest precision
-  nvm_file.precision(17);
+  nvm_fh.precision(17);
   
+  // Save the optical center. It will be used to undo the subtraction of
+  // the optical center for plotting purposes.
+  int file_len = nvm_filepath.size(); // cast to int
+  // Remove .nvm and add new suffix
+  std::string offset_path = nvm_filepath.substr(0, std::max(file_len - 4, 0)) + "_offsets.txt";
+  std::cout << "Writing optical offsets: " << offset_path << std::endl;
+  std::ofstream offset_fh;
+  offset_fh.open(offset_path.c_str());
+  if (!offset_fh.is_open()) {
+    LOG(WARNING) << "Could not open file for writing: " << offset_path;
+    return false;
+  }
+  // Save with the highest precision
+  offset_fh.precision(17);
+
   // Output the NVM header.
-  nvm_file << "NVM_V3 " << std::endl << std::endl;
+  nvm_fh << "NVM_V3 " << std::endl << std::endl;
 
   // Number of cameras.
   const auto& view_ids = reconstruction.ViewIds();
-  nvm_file << view_ids.size() << std::endl;
+  nvm_fh << view_ids.size() << std::endl;
   std::unordered_map<ViewId, int> view_id_to_index;
   std::unordered_map<ViewId, std::unordered_map<TrackId, int>>
       feature_index_mapping;
@@ -95,16 +110,20 @@ bool WriteNVMFile(const std::string& nvm_filepath,
     // Camera center in world coordinates
     const Eigen::Vector3d position(camera.GetPosition());
     
-    nvm_file << view.Name() << " " << camera.FocalLength() << " " << quat.w()
+    nvm_fh << view.Name() << " " << camera.FocalLength() << " " << quat.w()
              << " " << quat.x() << " " << quat.y() << " " << quat.z() << " "
              << position.x() << " " << position.y() << " " << position.z()
              << " ";
     if (camera.GetCameraIntrinsicsModelType() == CameraIntrinsicsModelType::PINHOLE)
-      nvm_file << camera.CameraIntrinsics()->GetParameter(PinholeCameraModel::RADIAL_DISTORTION_1);
+      nvm_fh << camera.CameraIntrinsics()->GetParameter(PinholeCameraModel::RADIAL_DISTORTION_1);
     else
-      nvm_file << "0";
-    nvm_file << " 0" << std::endl;
+      nvm_fh << "0";
+    nvm_fh << " 0" << std::endl;
 
+    offset_fh << view.Name() << " "
+              << camera.PrincipalPointX() << " "
+              << camera.PrincipalPointY() << "\n";
+    
     // Assign each feature in this view to a unique feature index (unique within
     // each image, not unique to the reconstruction).
     const auto& view_track_ids = reconstruction.View(view_id)->TrackIds();
@@ -116,7 +135,7 @@ bool WriteNVMFile(const std::string& nvm_filepath,
 
   // Number of points.
   const auto& track_ids = reconstruction.TrackIds();
-  nvm_file << track_ids.size() << std::endl;
+  nvm_fh << track_ids.size() << std::endl;
   // Output each point.
   for (const TrackId track_id : track_ids) {
     const Track* track = reconstruction.Track(track_id);
@@ -125,7 +144,7 @@ bool WriteNVMFile(const std::string& nvm_filepath,
     // Normalize the color.
     Eigen::Vector3i color = track->Color().cast<int>();
 
-    nvm_file << position.x() << " " << position.y() << " " << position.z()
+    nvm_fh << position.x() << " " << position.y() << " " << position.z()
              << " " << color.x() << " " << color.y() << " " << color.z() << " "
              << track->NumViews() << " ";
 
@@ -143,15 +162,15 @@ bool WriteNVMFile(const std::string& nvm_filepath,
       const int track_index =
           FindOrDie(FindOrDie(feature_index_mapping, view_id), track_id);
       const int view_index = FindOrDie(view_id_to_index, view_id);
-      nvm_file << view_index << " " << track_index << " " << feature.x() << " "
+      nvm_fh << view_index << " " << track_index << " " << feature.x() << " "
                << feature.y() << " ";
     }
-    nvm_file << std::endl;
+    nvm_fh << std::endl;
   }
 
   // Indicate the end of the file.
-  nvm_file << "0" << std::endl;
-  nvm_file.close();
+  nvm_fh << "0" << std::endl;
+  nvm_fh.close();
   return true;
 }
 
