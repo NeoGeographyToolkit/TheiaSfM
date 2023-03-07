@@ -49,8 +49,12 @@
 #include "theia/sfm/camera_intrinsics_prior.h"
 #include "theia/util/map_util.h"
 
+// Get rid of warnings beyond our control
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#pragma GCC diagnostic push
 // Generated file
 #include "camera_sensor_database.h"
+#pragma GCC diagnostic pop
 
 namespace theia {
 namespace {
