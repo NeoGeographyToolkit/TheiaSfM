@@ -113,7 +113,7 @@ bool FisherVectorExtractor::Train() {
   // Get the features randomly sampled for training.
   const auto& sampled_features = training_feature_sampler_.GetAllSamples();
   CHECK_GT(sampled_features.size(), 0);
-  LOG(INFO) << "Training GMM for Fisher Vector extractin with "
+  LOG(INFO) << "Training GMM for Fisher Vector extraction with "
             << sampled_features.size() << " features sampled from "
             << training_feature_sampler_.NumElementsAdded()
             << " total features.";
