@@ -97,9 +97,9 @@ bool WriteNVMFile(const std::string& nvm_filepath,
     const Camera& camera = view.Camera();
     if (camera.GetCameraIntrinsicsModelType() != CameraIntrinsicsModelType::PINHOLE &&
         !printed_warning) {
-      std::cout << "Camera " << view.Name()
-                << " is not pinhole, so its intrinsics won't be saved correctly in the "
-                << " NVM output file. Saving the poses however. Will not print more "
+      std::cout << "Camera " << view.Name() << " is not pinhole, so its "
+                << "intrinsics won't be saved correctly in the NVM output "
+                << "file. Saving the poses however. Will not print more "
                 << "such warnings.\n";
       printed_warning = true;
     }
