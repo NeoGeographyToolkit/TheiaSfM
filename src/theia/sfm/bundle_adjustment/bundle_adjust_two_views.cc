@@ -96,8 +96,8 @@ void AddCameraParametersToProblem(const bool constant_extrinsic_parameters,
               constant_intrinsics.end(),
               1);
 
-    ceres::SubsetParameterization* subset_parameterization =
-        new ceres::SubsetParameterization(num_intrinsics,
+    ceres::SubsetManifold* subset_parameterization =
+        new ceres::SubsetManifold(num_intrinsics,
                                           constant_intrinsics);
     problem->AddParameterBlock(camera_intrinsics,
                                num_intrinsics,
@@ -216,8 +216,8 @@ BundleAdjustmentSummary BundleAdjustTwoViewsAngular(
   const int kParameterBlockSize = 3;
   problem.AddParameterBlock(info->rotation_2.data(), kParameterBlockSize);
   // Add the position as a parameter block, ensuring that the norm is 1.
-  ceres::LocalParameterization* position_parameterization =
-      new ceres::AutoDiffLocalParameterization<
+  ceres::Manifold* position_parameterization =
+      new ceres::AutoDiffManifold<
           UnitNormThreeVectorParameterization, 3, 3>;
   problem.AddParameterBlock(info->position_2.data(),
                             kParameterBlockSize,

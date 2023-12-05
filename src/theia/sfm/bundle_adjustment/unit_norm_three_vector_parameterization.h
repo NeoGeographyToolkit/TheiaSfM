@@ -41,9 +41,11 @@ namespace theia {
 
 // A parameterization for Ceres that keeps a 3-dimensional vector as a unit-norm
 // vector throughout optimization.
+
+// Implement the addition of unit vectors.
 struct UnitNormThreeVectorParameterization {
   template<typename T>
-  bool operator()(const T* x, const T* delta, T* x_plus_delta) const {
+  bool Plus(const T* x, const T* delta, T* x_plus_delta) const {
     x_plus_delta[0] = x[0] + delta[0];
     x_plus_delta[1] = x[1] + delta[1];
     x_plus_delta[2] = x[2] + delta[2];
@@ -58,6 +60,28 @@ struct UnitNormThreeVectorParameterization {
     }
 
     return true;
+  }
+
+  // Implement the subtraction of unit vectors.
+  template <typename T>
+  bool Minus(const T* y, const T* x, T* y_minus_x) const {
+    y_minus_x[0] = y[0] - x[0];
+    y_minus_x[1] = y[1] - x[1];
+    y_minus_x[2] = y[2] - x[2];
+
+    // Scale the difference vector such that it lies in the tangent space of the
+    // unit quaternion at x.
+    const T sq_norm = y_minus_x[0] * y_minus_x[0] +
+                      y_minus_x[1] * y_minus_x[1] +
+                      y_minus_x[2] * y_minus_x[2];
+    if (sq_norm > T(0.0)) {
+      const T norm = sqrt(sq_norm);
+      y_minus_x[0] /= norm;
+      y_minus_x[1] /= norm;
+      y_minus_x[2] /= norm;
+    }
+
+    return true; 
   }
 };
 
