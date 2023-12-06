@@ -48,6 +48,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 # Otherwise Theia fails to build
 add_compile_options(-fPIC)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 # Turn this off as it is failing recently
 # # Set up the git hook to make Gerrit Change-Id: lines in commit messages.
