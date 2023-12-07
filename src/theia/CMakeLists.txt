@@ -246,6 +246,10 @@ set_target_properties(theia PROPERTIES
   )
 target_link_libraries(theia ${THEIA_LIBRARY_DEPENDENCIES})
 
+# This has to be here because otherwise Theia manages to unsert std=gnu++14
+# somehow overriding this flag
+target_compile_options(theia PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-std=c++17>)
+
 install(TARGETS theia
   EXPORT  TheiaExport
   RUNTIME DESTINATION bin
