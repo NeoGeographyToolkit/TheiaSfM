@@ -95,12 +95,9 @@ bool WriteNVMFile(const std::string& nvm_filepath,
     // be saved, than not to save them at all.
     const View& view = *reconstruction.View(view_id);
     const Camera& camera = view.Camera();
-    if (camera.GetCameraIntrinsicsModelType() != CameraIntrinsicsModelType::PINHOLE &&
-        !printed_warning) {
-      std::cout << "Camera " << view.Name() << " is not pinhole, so its "
-                << "intrinsics won't be saved correctly in the NVM output "
-                << "file. Saving the poses however. Will not print more "
-                << "such warnings.\n";
+    if (!printed_warning) {
+      std::cout << "Will save the camera poses, but not the intrinsics, to the NVM output "
+                << "file.\n";
       printed_warning = true;
     }
 
