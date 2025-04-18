@@ -20,8 +20,8 @@ add_subdirectory(statx)
 # STLPlus for filepath tools.
 add_subdirectory(stlplus3)
 
-# Add VLFeat.
-add_subdirectory(vlfeat)
+# Switched to external vlfeat.
+# add_subdirectory(vlfeat)
 
 # Add VisualSfM files.
 add_subdirectory(visual_sfm)

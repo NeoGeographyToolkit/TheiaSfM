@@ -29,8 +29,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-cmake_minimum_required(VERSION 2.8.0)
-cmake_policy(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
+cmake_policy(VERSION 3.5)
 
 if (COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)

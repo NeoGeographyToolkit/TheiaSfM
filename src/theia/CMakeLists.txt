@@ -213,6 +213,7 @@ set(THEIA_SRC
   util/timer.cc
   )
 
+# vlfeat is now an external dependency, that we link to as -lvl
 set(THEIA_LIBRARY_DEPENDENCIES
   ${CERES_LIBRARIES}
   ${GFLAGS_LIBRARIES}
@@ -224,8 +225,8 @@ set(THEIA_LIBRARY_DEPENDENCIES
   ${FLANN_LIBRARIES}
   statx
   stlplus3
-  vlfeat
   visual_sfm
+  -lvl
 )
 
 # Custom fix for OSX.
@@ -249,6 +250,16 @@ target_link_libraries(theia ${THEIA_LIBRARY_DEPENDENCIES})
 # This has to be here because otherwise Theia manages to unsert std=gnu++14
 # somehow overriding this flag
 target_compile_options(theia PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-std=c++17>)
+
+# This must be built with C++14 as otherwise it fails. Must be set
+# after the standard is set for the entire library.
+set_source_files_properties(matching/guided_epipolar_matcher.cc
+    PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF # Keep consistent if desired
+    COMPILE_FLAGS "-std=c++14" # Use this if CXX_STANDARD doesn't work as expected or for more control
+)
 
 install(TARGETS theia
   EXPORT  TheiaExport

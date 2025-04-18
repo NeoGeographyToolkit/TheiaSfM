@@ -32,7 +32,7 @@
 # Please contact the author of this library if you have any questions.
 # Author: Chris Sweeney (sweeney.chris.m@gmail.com)
 
-cmake_minimum_required(VERSION 2.8.3)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 if (COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif (COMMAND cmake_policy)
@@ -257,7 +257,9 @@ include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 find_package(FLANN REQUIRED)
 
-# build Third party libraries included in distro.
+# vlfeat is now an external package installed via conda
+
+# build Third party libraries included with the source code
 add_subdirectory(libraries)
 include_directories(
   libraries
@@ -266,14 +268,14 @@ include_directories(
   ${akaze_INCLUDE_DIR}
   ${cereal_SOURCE_DIR}
   ${cereal_SOURCE_DIR}/include
-#  ${flann_SOURCE_DIR}
-#  ${flann_SOURCE_DIR}/src/cpp
+  # ${flann_SOURCE_DIR} # switched to external
+  # ${flann_SOURCE_DIR}/src/cpp
+  # ${vlfeat_SOURCE_DIR} # switched to external
   ${gtest_SOURCE_DIR}/include
   ${gtest_SOURCE_DIR}
   ${optimo_SOURCE_DIR}
   ${statx_SOURCE_DIR}
   ${stlplus3_SOURCE_DIR}
-  ${vlfeat_SOURCE_DIR}
   ${visual_sfm_SOURCE_DIR})
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
