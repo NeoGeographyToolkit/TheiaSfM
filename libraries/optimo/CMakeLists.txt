@@ -30,7 +30,7 @@
 #
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
-cmake_policy(VERSION 2.8)
+cmake_policy(VERSION 3.15)
 
 if (COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
