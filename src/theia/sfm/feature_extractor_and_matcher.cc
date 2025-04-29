@@ -76,7 +76,6 @@ void ExtractFeatures(const FeatureExtractorAndMatcher::Options& options,
                      std::vector<Eigen::VectorXf>* descriptors) {
   static const float kMaskThreshold = 0.5;
   std::unique_ptr<FloatImage> image(new FloatImage(image_filepath));
-  std::cout << "\n\n--read image from file " << image_filepath << "\n\n\n" << std::endl;
   // We create these variable here instead of upon the construction of the
   // object so that they can be thread-safe. We *should* be able to use the
   // static thread_local keywords, but apparently Mac OS-X's version of clang
@@ -89,13 +88,6 @@ void ExtractFeatures(const FeatureExtractorAndMatcher::Options& options,
                                 options.feature_density);
 
   // Exit if the descriptor extraction fails.
-  std::cout << "---555 now will call DetectAndExtractDescriptors" << std::endl;
-  std::cout << "---image name is " << image_filepath << std::endl;
-  std::cout << "--mask name is " << imagemask_filepath << std::endl;
-  
-  std::cout << "--iamge file size 5555 is " << image->Width() << " x "
-            << image->Height() << std::endl;
-            
   if (!descriptor_extractor->DetectAndExtractDescriptors(
           *image, keypoints, descriptors)) {
     LOG(ERROR) << "Could not extract descriptors in image " << image_filepath;
@@ -132,11 +124,11 @@ void ExtractFeatures(const FeatureExtractorAndMatcher::Options& options,
   }
 
   if (imagemask_filepath.size() > 0) {
-    VLOG(1) << "1Successfully extracted " << descriptors->size()
+    VLOG(1) << "Successfully extracted " << descriptors->size()
             << " features from image " << image_filepath
             << " with an image mask.";
   } else {
-    VLOG(1) << "2Successfully extracted " << descriptors->size()
+    VLOG(1) << "Successfully extracted " << descriptors->size()
             << " features from image " << image_filepath;
   }
 }

@@ -35,7 +35,7 @@
 #ifndef THEIA_SFM_EXIF_READER_H_
 #define THEIA_SFM_EXIF_READER_H_
 
-#include <OpenImageIO/imageio.h>
+//#include <OpenImageIO/imageio.h>
 #include <string>
 #include <unordered_map>
 
@@ -43,9 +43,11 @@
 #include "theia/util/util.h"
 
 namespace theia {
-// Aliasing oiio to whatever the correct Open Image IO namesace is.
-// The macro OIIO_NAMESPACE is defined in OpenImageIO/oiioversion.h.
-namespace oiio = OIIO_NAMESPACE;
+// TODO(oalexan1): This needs porting to OpenCV from OpenImageIO.
+    
+// // Aliasing oiio to whatever the correct Open Image IO namespace is.
+// // The macro OIIO_NAMESPACE is defined in OpenImageIO/oiioversion.h.
+// namespace oiio = OIIO_NAMESPACE;
 
 struct CameraIntrinsicsPrior;
 
@@ -74,17 +76,18 @@ class ExifReader {
  private:
   void LoadSensorWidthDatabase();
 
-  // Sets the focal length from the focal plane resolution. Returns true if a
-  // valid focal length is found and false otherwise.
-  bool SetFocalLengthFromExif(
-      const oiio::ImageSpec& image_spec,
-      CameraIntrinsicsPrior* camera_intrinsics_prior) const;
+// TODO(oalexan1): This needs porting to OpenCV from OpenImageIO.
+//   // Sets the focal length from the focal plane resolution. Returns true if a
+//   // valid focal length is found and false otherwise.
+//   bool SetFocalLengthFromExif(
+//       const oiio::ImageSpec& image_spec,
+//       CameraIntrinsicsPrior* camera_intrinsics_prior) const;
 
-  // Sets the focal length from a look up in the sensor width database. Returns
-  // true if a valid focal length is found and false otherwise.
-  bool SetFocalLengthFromSensorDatabase(
-      const oiio::ImageSpec& image_spec,
-      CameraIntrinsicsPrior* camera_intrinsics_prior) const;
+//   // Sets the focal length from a look up in the sensor width database. Returns
+//   // true if a valid focal length is found and false otherwise.
+//   bool SetFocalLengthFromSensorDatabase(
+//       const oiio::ImageSpec& image_spec,
+//       CameraIntrinsicsPrior* camera_intrinsics_prior) const;
 
   std::unordered_map<std::string, double> sensor_width_database_;
 

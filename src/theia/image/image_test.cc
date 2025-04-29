@@ -32,6 +32,10 @@
 // Please contact the author of this library if you have any questions.
 // Author: Chris Sweeney (cmsweeney@cs.ucsb.edu)
 
+#if 0
+
+// TODO(oalexan1): This needs porting to OpenCV from OpenImageIO.
+
 #include <Eigen/Core>
 #include <gflags/gflags.h>
 #include <OpenImageIO/imagebuf.h>
@@ -224,3 +228,5 @@ TEST(Image, ResizeUninitialized) {
 }
 
 }  // namespace theia
+
+#endif

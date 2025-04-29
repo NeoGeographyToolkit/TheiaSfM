@@ -244,19 +244,19 @@ include_directories(
   ${CERES_INCLUDE_DIRS}
   ${GFLAGS_INCLUDE_DIRS}
   ${GLOG_INCLUDE_DIRS}
-  ${OPENIMAGEIO_INCLUDE_DIRS}
+  # ${OPENIMAGEIO_INCLUDE_DIRS} # Using OpenCV instead
+  ${OPENCV_INCLUDE_DIRS}
   ${RAPIDJSON_INCLUDE_DIRS}
   ${ROCKSDB_INCLUDE_DIR}
   ${SUITESPARSE_INCLUDE_DIRS}
-  ${OPENCV_INCLUDE_DIRS}
 )
 
 # NOTE: This fix came from Ceres solver with the following comment:
 #
 # Eigen SparseQR generates various compiler warnings related to unused and
-# uninitialised local variables, which prevents Ceres compilation as we use
+# uninitialized local variables, which prevents Ceres compilation as we use
 # -Werror.  To avoid having to individually suppress these warnings around
-# the #include statments for Eigen headers across all GCC/Clang versions, we
+# the #include statements for Eigen headers across all GCC/Clang versions, we
 # tell CMake to treat Eigen headers as system headers.  This results in all
 # compiler warnings from them being suppressed.
 #

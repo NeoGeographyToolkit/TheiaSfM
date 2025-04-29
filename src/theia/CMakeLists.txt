@@ -218,12 +218,12 @@ set(THEIA_LIBRARY_DEPENDENCIES
   ${CERES_LIBRARIES}
   ${GFLAGS_LIBRARIES}
   ${GLOG_LIBRARIES}
-  OpenImageIO
+  # OpenImageIO # Replaced by OpenCV
+  ${OpenCV_LIBRARIES}
   ${ROCKSDB_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
   akaze
   ${FLANN_LIBRARIES}
-  ${OpenCV_LIBRARIES}
   statx
   stlplus3
   visual_sfm

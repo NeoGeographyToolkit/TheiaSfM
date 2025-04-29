@@ -36,19 +36,15 @@
 #define THEIA_IMAGE_IMAGE_H_
 
 #include <Eigen/Core>
-#include <OpenImageIO/imagebuf.h> // TODO(oalexan1): Wipe this
 #include <opencv2/imgcodecs.hpp>
 #include <string>
 
 namespace theia {
-// Aliasing oiio to whatever the correct Open Image IO namesace is.
-// The macro OIIO_NAMESPACE is defined in OpenImageIO/oiioversion.h.
-namespace oiio = OIIO_NAMESPACE;
 
-// A basic wrapper class for handling images. The images are always converted to
-// floating point type with pixel values ranging from 0 to 1.0. The number of
-// channels is dynamically controlled and methods that access pixels requires
-// the caller to choose to appropriate RGB vs grayscale method.
+// A basic wrapper class around OpenCV for handling images. The images are
+// always converted to floating point type with pixel values ranging from 0 to
+// 1.0. The number of channels is dynamically controlled and methods that access
+// pixels requires the caller to choose to appropriate RGB vs grayscale method.
 class FloatImage {
  public:
   FloatImage();
@@ -68,18 +64,8 @@ class FloatImage {
 
   // Copy function. This is a deep copy of the image.
   FloatImage(const FloatImage& image_to_copy);
-  explicit FloatImage(const oiio::ImageBuf& image);
   FloatImage& operator=(const FloatImage& input_image);
   ~FloatImage() {}
-
-  // Get a reference to the underlying ImageBuf object for direct
-  // manipulation. The OpenImageIO library has a large number of image
-  // processing algorithms available but it does not make sense to provide a
-  // wrapper for all algorithms. Getting a reference to the ImageBuf provides
-  // efficient access to the image data so that the image processing algorithms
-  // or other manipulations may be executed on the pixels.
-  oiio::ImageBuf& GetOpenImageIOImageBuf();
-  const oiio::ImageBuf& GetOpenImageIOImageBuf() const;
 
   // Image information
   int Rows() const;
@@ -176,7 +162,6 @@ class FloatImage {
   void Resize(double scale);
 
  protected:
-  oiio::ImageBuf image_; // TODO(oalexan1): Wipe this
   cv::Mat m_opencv_image; 
 };
 }  // namespace theia
