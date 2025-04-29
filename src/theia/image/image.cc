@@ -34,10 +34,12 @@
 
 #include "theia/image/image.h"
 
-#include <OpenImageIO/imagebuf.h>
-#include <OpenImageIO/imagebufalgo.h>
+#include <OpenImageIO/imagebuf.h> // TODO(oalexan1): Wipe this
+#include <OpenImageIO/imagebufalgo.h> // TODO(oalexan1): Wipe this
 #include <glog/logging.h>
 #include <Eigen/Core>
+
+#include <opencv2/imgproc.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -50,52 +52,80 @@
 
 namespace theia {
 
-FloatImage::FloatImage() : FloatImage(0, 0, 1) {}
+FloatImage::FloatImage(): FloatImage(0, 0, 1) {}
 
 // Read from file.
-FloatImage::FloatImage(const std::string& filename) { Read(filename); }
+FloatImage::FloatImage(const std::string& filename) { 
+  Read(filename); 
+}
 
 FloatImage::FloatImage(const FloatImage& image_to_copy) {
-  CHECK(image_.copy(image_to_copy.image_));
+  //CHECK(image_.copy(image_to_copy.image_));
+  image_to_copy.m_opencv_image.copyTo(this->m_opencv_image);
 }
 
 FloatImage::FloatImage(const int width, const int height, const int channels) {
-  oiio::ImageSpec image_spec(width, height, channels, oiio::TypeDesc::FLOAT);
-  image_.reset(image_spec);
+  //oiio::ImageSpec image_spec(width, height, channels, oiio::TypeDesc::FLOAT);
+  //image_.reset(image_spec);
+  cv::Size s;
+  s.width = width;
+  s.height = height;
+  this->m_opencv_image = cv::Mat(s, CV_32FC(channels));
 }
 
 FloatImage::FloatImage(const int width, const int height, const int channels,
                        float* buffer)
     : image_(oiio::ImageSpec(width, height, channels, oiio::TypeDesc::FLOAT),
-             reinterpret_cast<void*>(buffer)) {}
+             reinterpret_cast<void*>(buffer)) {
 
-FloatImage::FloatImage(const oiio::ImageBuf& image) {
-  image_.copy(image);
+  // throw an error
+  throw std::runtime_error("Image from raw buffer not supported");
 }
 
-FloatImage& FloatImage::operator=(const FloatImage& image2) {
-  image_.copy(image2.image_);
+FloatImage::FloatImage(const oiio::ImageBuf& image) {
+  // image_.copy(image);
+  throw std::runtime_error("oiio image not supported");
+}
+
+FloatImage& FloatImage::operator=(const FloatImage& input_image) {
+  //image_.copy(image2.image_);
+  input_image.m_opencv_image.copyTo(this->m_opencv_image);
   return *this;
 }
 
-oiio::ImageBuf& FloatImage::GetOpenImageIOImageBuf() { return image_; }
+oiio::ImageBuf& FloatImage::GetOpenImageIOImageBuf() { 
+  throw std::runtime_error("Get oiio buffer not supported");
+  return image_; 
+ }
 
 const oiio::ImageBuf& FloatImage::GetOpenImageIOImageBuf() const {
+  throw std::runtime_error("Get oiio buffer not supported");
   return image_;
 }
 
-int FloatImage::Rows() const { return Height(); }
+int FloatImage::Rows() const { 
+  return Height(); 
+}
 
-int FloatImage::Cols() const { return Width(); }
+int FloatImage::Cols() const { 
+  return Width(); 
+}
 
-int FloatImage::Width() const { return image_.spec().width; }
+int FloatImage::Width() const { 
+  return m_opencv_image.cols;
+}
 
-int FloatImage::Height() const { return image_.spec().height; }
+int FloatImage::Height() const {
+  return m_opencv_image.rows;
+}
 
-int FloatImage::Channels() const { return image_.nchannels(); }
+int FloatImage::Channels() const {
+  return m_opencv_image.channels();
+}
 
 void FloatImage::SetXY(const int x, const int y, const int c,
                        const float value) {
+  throw std::runtime_error("SetXY not supported");
   DCHECK_GE(x, 0);
   DCHECK_LT(x, Width());
   DCHECK_GE(y, 0);
@@ -109,6 +139,7 @@ void FloatImage::SetXY(const int x, const int y, const int c,
 }
 
 void FloatImage::SetXY(const int x, const int y, const Eigen::Vector3f& rgb) {
+  throw std::runtime_error("SetXY not supported");
   DCHECK_GE(x, 0);
   DCHECK_LT(x, Width());
   DCHECK_GE(y, 0);
@@ -118,6 +149,7 @@ void FloatImage::SetXY(const int x, const int y, const Eigen::Vector3f& rgb) {
 }
 
 float FloatImage::GetXY(const int x, const int y, const int c) const {
+  throw std::runtime_error("GetXY not supported");
   DCHECK_GE(x, 0);
   DCHECK_LT(x, Width());
   DCHECK_GE(y, 0);
@@ -128,6 +160,7 @@ float FloatImage::GetXY(const int x, const int y, const int c) const {
 }
 
 Eigen::Vector3f FloatImage::GetXY(const int x, const int y) const {
+  throw std::runtime_error("GetXY not supported");
   DCHECK_GE(x, 0);
   DCHECK_LT(x, Width());
   DCHECK_GE(y, 0);
@@ -139,25 +172,30 @@ Eigen::Vector3f FloatImage::GetXY(const int x, const int y) const {
 
 void FloatImage::SetRowCol(const int row, const int col, const int channel,
                            const float value) {
+  throw std::runtime_error("SetRowCol not supported");
   SetXY(col, row, channel, value);
 }
 
 void FloatImage::SetRowCol(const int row, const int col,
                            const Eigen::Vector3f& rgb) {
+  throw std::runtime_error("SetRowCol not supported");
   SetXY(col, row, rgb);
 }
 
 float FloatImage::GetRowCol(const int row, const int col,
                             const int channel) const {
+  throw std::runtime_error("GetRowCol not supported");
   return GetXY(col, row, channel);
 }
 
 Eigen::Vector3f FloatImage::GetRowCol(const int row, const int col) const {
+  throw std::runtime_error("Buffer not supported");
   return GetXY(col, row);
 }
 
 float FloatImage::BilinearInterpolate(const double x, const double y,
                                       const int c) const {
+  throw std::runtime_error("BilinearInterpolate not supported");
   DCHECK_GE(c, 0);
   DCHECK_LT(c, Channels());
   // The caller has to ensure that "pixel" has sufficient memory to store all
@@ -169,6 +207,7 @@ float FloatImage::BilinearInterpolate(const double x, const double y,
 
 Eigen::Vector3f FloatImage::BilinearInterpolate(const double x,
                                                 const double y) const {
+  throw std::runtime_error("BilinearInterpolate not supported");
   Eigen::Vector3f pixel;
   image_.interppixel(x, y, pixel.data());
   return pixel;
@@ -176,24 +215,31 @@ Eigen::Vector3f FloatImage::BilinearInterpolate(const double x,
 
 void FloatImage::ConvertToGrayscaleImage() {
   if (Channels() == 1) {
-    VLOG(2) << "Image is already a grayscale image. No conversion necessary.";
+    // Image is already a grayscale image. No conversion necessary
     return;
   }
 
-  // Compute luminance via a weighted sum of R,G,B (assuming Rec709 primaries
-  // and a linear scale)
-  const float luma_weights[3] = {.2126, .7152, .0722};
-  oiio::ImageBuf source = image_;
-  image_.clear();
-  oiio::ImageBufAlgo::channel_sum(image_, source, luma_weights);
+  cv::Mat helper_image;
+  cv::cvtColor(m_opencv_image, helper_image, cv::COLOR_BGR2GRAY); // 3 to 1 channels
+  helper_image.convertTo(m_opencv_image, CV_32F); // convert int to float
+
+  // // Compute luminance via a weighted sum of R,G,B (assuming Rec709 primaries
+  // // and a linear scale)
+  // const float luma_weights[3] = {.2126, .7152, .0722};
+  // oiio::ImageBuf source = image_;
+  // image_.clear();
+  // oiio::ImageBufAlgo::channel_sum(image_, source, luma_weights);
 }
 
 void FloatImage::ConvertToRGBImage() {
+  
   if (Channels() == 3) {
-    VLOG(2) << "Image is already an RGB image. No conversion necessary.";
+    // Image is already an RGB image. No conversion necessary
     return;
   }
 
+  throw std::runtime_error("ConvertToRGBImage not supported");
+  
   if (Channels() == 1) {
     // Copy the single grayscale channel into r, g, and b.
     const oiio::ImageBuf source(image_);
@@ -218,9 +264,10 @@ void FloatImage::ConvertToRGBImage() {
 
 FloatImage FloatImage::AsGrayscaleImage() const {
   if (Channels() == 1) {
-    VLOG(2) << "Image is already a grayscale image. No conversion necessary.";
+    // Image is already a grayscale image. No conversion necessary
     return *this;
   }
+  
   FloatImage gray_image(*this);
   gray_image.ConvertToGrayscaleImage();
   return gray_image;
@@ -228,36 +275,49 @@ FloatImage FloatImage::AsGrayscaleImage() const {
 
 FloatImage FloatImage::AsRGBImage() const {
   if (Channels() == 3) {
-    VLOG(2) << "Image is already an RGB image. No conversion necessary.";
+    // Image is already an RGB image. No conversion necessary
     return *this;
   }
 
+  throw std::runtime_error("AsRGBImage not supported");
   FloatImage rgb_image(*this);
   rgb_image.ConvertToRGBImage();
   return rgb_image;
 }
 
 void FloatImage::ScalePixels(float scale) {
+  throw std::runtime_error("ScalePixels not supported");
   oiio::ImageBufAlgo::mul(image_, image_, scale);
 }
 
 void FloatImage::Read(const std::string& filename) {
-  image_.reset(filename);
-  image_.read(0, 0, true, oiio::TypeDesc::FLOAT);
+  std::cout << "---now will read image " << filename << std::endl;
+  
+  // Ensure we always read a float image. We count on this later.
+  cv::Mat input_image = cv::imread(filename);
+  if (input_image.channels() == 1) {
+    input_image.convertTo(m_opencv_image, CV_32F);
+  } else {
+    cv::Mat helper_image;
+    cv::cvtColor(input_image, helper_image, cv::COLOR_BGR2GRAY); // 3 to 1 channels
+    helper_image.convertTo(m_opencv_image, CV_32F); // convert int to float
+  }
 }
 
 void FloatImage::Write(const std::string& filename) const {
-  image_.write(filename);
+  cv::imwrite(filename, m_opencv_image);
 }
 
+// Get the raw float pixel array
 float* FloatImage::Data() {
-  return reinterpret_cast<float*>(image_.localpixels());
+  return reinterpret_cast<float*>(m_opencv_image.ptr<float>(0));
 }
 const float* FloatImage::Data() const {
-  return reinterpret_cast<const float*>(image_.localpixels());
+  return reinterpret_cast<const float*>(m_opencv_image.ptr<float>(0));
 }
 
 FloatImage FloatImage::ComputeGradientX() const {
+  throw std::runtime_error("ComputeGradientX not supported");
   float sobel_filter_x[9] = {-.125, 0, .125, -.25, 0, .25, -.125, 0, .125};
   oiio::ImageSpec spec(3, 3, 1, oiio::TypeDesc::FLOAT);
   oiio::ImageBuf kernel_x(spec, sobel_filter_x);
@@ -267,6 +327,7 @@ FloatImage FloatImage::ComputeGradientX() const {
 }
 
 FloatImage FloatImage::ComputeGradientY() const {
+  throw std::runtime_error("ComputeGradientY not supported");
   float sobel_filter_y[9] = {-.125, -.25, -.125, 0, 0, 0, .125, .25, .125};
   oiio::ImageSpec spec(3, 3, 1, oiio::TypeDesc::FLOAT);
   oiio::ImageBuf kernel_y(spec, sobel_filter_y);
@@ -276,6 +337,7 @@ FloatImage FloatImage::ComputeGradientY() const {
 }
 
 FloatImage FloatImage::ComputeGradient() const {
+  throw std::runtime_error("ComputeGradient not supported");
   // Get Dx and Dy.
   float sobel_filter_x[9] = {-.125, 0, .125, -.25, 0, .25, -.125, 0, .125};
   float sobel_filter_y[9] = {-.125, -.25, -.125, 0, 0, 0, .125, .25, .125};
@@ -295,6 +357,7 @@ FloatImage FloatImage::ComputeGradient() const {
 }
 
 void FloatImage::ApproximateGaussianBlur(const int kernel_size) {
+  throw std::runtime_error("ApproximateGaussianBlur not supported");
   oiio::ImageBuf kernel;
   oiio::ImageBufAlgo::make_kernel(kernel, "gaussian",
                                   static_cast<float>(kernel_size),
@@ -303,10 +366,12 @@ void FloatImage::ApproximateGaussianBlur(const int kernel_size) {
 }
 
 void FloatImage::MedianFilter(const int patch_width) {
+  throw std::runtime_error("MedianFilter not supported");
   CHECK(oiio::ImageBufAlgo::median_filter(image_, image_, patch_width));
 }
 
 void FloatImage::Integrate(FloatImage* integral) const {
+  throw std::runtime_error("Integrate not supported");
   integral->ResizeRowsCols(Rows() + 1, Cols() + 1);
   for (int i = 0; i < Channels(); i++) {
     // Fill the first row with zeros.
@@ -326,6 +391,7 @@ void FloatImage::Integrate(FloatImage* integral) const {
 }
 
 void FloatImage::Resize(int new_width, int new_height, int num_channels) {
+  throw std::runtime_error("Resize not supported");
   // If the image has not been initialized then initialize it with the image
   // spec. Otherwise resize the image and interpolate pixels accordingly.
   if (!image_.initialized()) {
@@ -345,14 +411,17 @@ void FloatImage::Resize(int new_width, int new_height, int num_channels) {
 }
 
 void FloatImage::Resize(int new_width, int new_height) {
+  throw std::runtime_error("Resize not supported");
   Resize(new_width, new_height, Channels());
 }
 
 void FloatImage::ResizeRowsCols(int new_rows, int new_cols) {
+  throw std::runtime_error("ResizeRowsCols not supported");
   Resize(new_cols, new_rows, Channels());
 }
 
 void FloatImage::Resize(double scale) {
+  throw std::runtime_error("Resize not supported");
   Resize(static_cast<int>(scale * Width()), static_cast<int>(scale * Height()),
          Channels());
 }

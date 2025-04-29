@@ -220,7 +220,7 @@ else (ROCKSDB_FOUND)
   message(FATAL_ERROR "Can't find RocksDB. Please set ROCKSDB_INCLUDE_DIR & ROCKSDB_LIBRARY to use RocksDB.")
 endif (ROCKSDB_FOUND)
 
-# RapidJSON.
+# RapidJSON
 message("-- Check for RapidJSON")
 find_package(RapidJSON REQUIRED)
 if (RapidJSON_FOUND)
@@ -228,6 +228,15 @@ if (RapidJSON_FOUND)
 else (RapidJSON_FOUND)
   message(FATAL_ERROR "Can't find RapidJSON. Please set RAPIDJSON_INCLUDE_DIRS to use RapidJSON.")
 endif (RapidJSON_FOUND)
+
+# OpenCV
+find_package(OpenCV 4.0.0 REQUIRED)
+set(OpenCV_LIBRARIES ${OpenCV_LIBS})
+if (OPENCV_FOUND)
+   message("-- Found OpenCV: ${OPENCV_INCLUDE_DIRS}")
+else (OPENCV_FOUND)
+   message(FATAL_ERROR "Cannot find OpenCV.")
+endif (OPENCV_FOUND)
 
 include_directories(
   include
@@ -239,6 +248,7 @@ include_directories(
   ${RAPIDJSON_INCLUDE_DIRS}
   ${ROCKSDB_INCLUDE_DIR}
   ${SUITESPARSE_INCLUDE_DIRS}
+  ${OPENCV_INCLUDE_DIRS}
 )
 
 # NOTE: This fix came from Ceres solver with the following comment:

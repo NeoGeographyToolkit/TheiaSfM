@@ -60,6 +60,7 @@ bool FeatureExtractor::Extract(
   CHECK_NOTNULL(keypoints)->resize(filenames.size());
   CHECK_NOTNULL(descriptors)->resize(filenames.size());
 
+  std::cout << "--now in Extract1" << std::endl;
   // The thread pool will wait to finish all jobs when it goes out of scope.
   const int num_threads =
       std::min(options_.num_threads, static_cast<int>(filenames.size()));
@@ -91,6 +92,8 @@ bool FeatureExtractor::Extract(
   CHECK_NOTNULL(keypoints)->resize(images.size());
   CHECK_NOTNULL(descriptors)->resize(images.size());
 
+  std::cout << "--now in Extract2" << std::endl;
+  std::cout << "--number of images is " << images.size() << std::endl;
   // The thread pool will wait to finish all jobs when it goes out of scope.
   const int num_threads =
           std::min(options_.num_threads, static_cast<int>(images.size()));
@@ -116,7 +119,9 @@ bool FeatureExtractor::ExtractToDisk(
         << "Could not create the directory for storing features: "
         << options_.output_directory;
   }
-
+  
+  std::cout << "--now in extract to disk" << std::endl;
+  
   std::vector<std::vector<Keypoint> > keypoints;
   std::vector<std::vector<Eigen::VectorXf> > descriptors;
   return Extract(filenames, &keypoints, &descriptors);
@@ -126,12 +131,15 @@ bool FeatureExtractor::ExtractFeatures(
     const std::string& filename,
     std::vector<Keypoint>* keypoints,
     std::vector<Eigen::VectorXf>* descriptors) {
+
+  std::cout << "---now in ExtractFeatures from filename---" << std::endl;
+  std::cout << "--with filename " << filename << std::endl;
   std::unique_ptr<FloatImage> image(new FloatImage(filename));
   if (!ExtractFeaturesFromImage(*image, keypoints, descriptors)) {
     LOG(ERROR) << "Could not extract descriptors in image " << filename;
     return false;
   } else {
-    VLOG(1) << "Successfully extracted " << descriptors->size()
+    VLOG(1) << "3Successfully extracted " << descriptors->size()
             << " features from image " << filename;
   }
 
@@ -175,6 +183,8 @@ bool FeatureExtractor::ExtractFeaturesFromImage(
                                 options_.feature_density);
 
   // Exit if the descriptor extraction fails.
+  std::cout << "--3now in ExtractFeaturesFromImage" << std::endl;
+  std::cout << "--3now will call DetectAndExtractDescriptors" << std::endl;
   if (!descriptor_extractor->DetectAndExtractDescriptors(image,
                                                          keypoints,
                                                          descriptors)) {

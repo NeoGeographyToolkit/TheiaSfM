@@ -36,7 +36,8 @@
 #define THEIA_IMAGE_IMAGE_H_
 
 #include <Eigen/Core>
-#include <OpenImageIO/imagebuf.h>
+#include <OpenImageIO/imagebuf.h> // TODO(oalexan1): Wipe this
+#include <opencv2/imgcodecs.hpp>
 #include <string>
 
 namespace theia {
@@ -68,7 +69,7 @@ class FloatImage {
   // Copy function. This is a deep copy of the image.
   FloatImage(const FloatImage& image_to_copy);
   explicit FloatImage(const oiio::ImageBuf& image);
-  FloatImage& operator=(const FloatImage& image2);
+  FloatImage& operator=(const FloatImage& input_image);
   ~FloatImage() {}
 
   // Get a reference to the underlying ImageBuf object for direct
@@ -175,7 +176,8 @@ class FloatImage {
   void Resize(double scale);
 
  protected:
-  oiio::ImageBuf image_;
+  oiio::ImageBuf image_; // TODO(oalexan1): Wipe this
+  cv::Mat m_opencv_image; 
 };
 }  // namespace theia
 

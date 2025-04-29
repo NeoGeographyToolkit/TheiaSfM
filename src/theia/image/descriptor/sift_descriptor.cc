@@ -217,6 +217,7 @@ bool SiftDescriptorExtractor::DetectAndExtractDescriptors(
     const FloatImage& image,
     std::vector<Keypoint>* keypoints,
     std::vector<Eigen::VectorXf>* descriptors) {
+  std::cout << "--- Detecting and extracting SIFT descriptors ---" << std::endl;
   // If the filter has been set, but is not usable for the input image (i.e. the
   // width and height are different) then we must make a new filter. Adding this
   // statement will save the function from regenerating the filter for
@@ -239,9 +240,14 @@ bool SiftDescriptorExtractor::DetectAndExtractDescriptors(
   // input, so the best solution (for now) is to copy the image.
   FloatImage mutable_image = image.AsGrayscaleImage();
 
+  std::cout << "--image rows is " << image.Rows() << std::endl;
+  std::cout << "--image cols is " << image.Cols() << std::endl;
+  
   // Calculate the first octave to process.
   int vl_status =
       vl_sift_process_first_octave(sift_filter_.get(), mutable_image.Data());
+  std::cout << "--is status success: " << (vl_status != VL_ERR_EOF) << std::endl;
+  
   // Process octaves until you can't anymore.
   while (vl_status != VL_ERR_EOF) {
     // Detect the keypoints.

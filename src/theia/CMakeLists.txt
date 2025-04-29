@@ -223,6 +223,7 @@ set(THEIA_LIBRARY_DEPENDENCIES
   ${SUITESPARSE_LIBRARIES}
   akaze
   ${FLANN_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   statx
   stlplus3
   visual_sfm
