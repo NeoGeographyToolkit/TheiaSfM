@@ -31,6 +31,11 @@ target_link_libraries(undistort_images theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIE
 set(OpenGL_GL_PREFERENCE GLVND)
 #set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(OpenGL REQUIRED)
+
+if (NOT APPLE)
+  find_package(X11 REQUIRED)
+endif (NOT APPLE)
+
 if (NOT MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 else (NOT MSVC)
@@ -53,16 +58,15 @@ endif (GLUT_FOUND)
 include_directories(${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIR})
 list(APPEND EXTRA_GL_LIBRARIES ${GLUT_LIBRARIES})
 
-# Need this to find libOpenGL on Linux
-set(EXTRA_SEARCH_DIR "")
+# Need this to find libOpenGL and X11 deps on Linux
+set(EXTRA_LIBS "")
 if (NOT APPLE)
-  set(EXTRA_SEARCH_DIR "-L/usr/lib64")
+  set(EXTRA_LIBS ${X11_LIBRARIES} -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lXxf86vm)
 endif()
-  
+
 add_executable(view_reconstruction view_reconstruction.cc)
-target_link_libraries(view_reconstruction theia ${EXTRA_SEARCH_DIR} ${GFLAGS_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${EXTRA_GL_LIBRARIES})
+target_link_libraries(view_reconstruction theia ${EXTRA_LIBS} ${GFLAGS_LIBRARIES}
+  ${OPENGL_LIBRARIES} ${EXTRA_GL_LIBRARIES})
 
 if(APPLE)
   set_target_properties(view_reconstruction PROPERTIES
