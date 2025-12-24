@@ -224,11 +224,16 @@ set(THEIA_LIBRARY_DEPENDENCIES
   ${SUITESPARSE_LIBRARIES}
   akaze
   ${FLANN_LIBRARIES}
+  ${OPENGL_LIBRARIES}
   statx
   stlplus3
   visual_sfm
   -lvl
 )
+
+if (LINUX)
+  list(APPEND THEIA_LIBRARY_DEPENDENCIES ${X11_LIBRARIES})
+endif()
 
 # Custom fix for OSX.
 # TODO(oalexan1): Find a more robust way of addressing this.

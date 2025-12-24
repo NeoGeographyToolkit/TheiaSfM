@@ -61,7 +61,7 @@ list(APPEND EXTRA_GL_LIBRARIES ${GLUT_LIBRARIES})
 # Need this to find libOpenGL and X11 deps on Linux
 set(EXTRA_LIBS "")
 if (NOT APPLE)
-  set(EXTRA_LIBS ${X11_LIBRARIES} -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lXxf86vm)
+  # set(EXTRA_LIBS ${X11_LIBRARIES} -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lXxf86vm)
 endif()
 
 add_executable(view_reconstruction view_reconstruction.cc)
