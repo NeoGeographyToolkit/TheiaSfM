@@ -35,6 +35,7 @@
 #include <chrono>  // NOLINT
 #include <gflags/gflags.h>
 #include <glog/logging.h>
+#include <memory>
 #include <string>
 #include <theia/theia.h>
 #include <time.h>
@@ -60,6 +61,11 @@ DEFINE_string(
 DEFINE_int32(num_threads,
              1,
              "Number of threads to use for feature extraction and matching.");
+
+// Random seed for reproducibility.
+DEFINE_int32(random_seed, 0,
+             "Random seed for reproducible results. If 0, seed with "
+             "current time.");
 
 // Feature and matching options.
 DEFINE_string(
@@ -269,6 +275,8 @@ using theia::ReconstructionBuilderOptions;
 ReconstructionBuilderOptions SetReconstructionBuilderOptions() {
   ReconstructionBuilderOptions options;
   options.num_threads = FLAGS_num_threads;
+  if (FLAGS_random_seed != 0)
+    options.rng = std::make_shared<RandomNumberGenerator>(FLAGS_random_seed);
 
   options.descriptor_type = StringToDescriptorExtractorType(FLAGS_descriptor);
   options.feature_density = StringToFeatureDensity(FLAGS_feature_density);
