@@ -276,7 +276,7 @@ ReconstructionBuilderOptions SetReconstructionBuilderOptions() {
   ReconstructionBuilderOptions options;
   options.num_threads = FLAGS_num_threads;
   if (FLAGS_random_seed != 0)
-    options.rng = std::make_shared<RandomNumberGenerator>(FLAGS_random_seed);
+    options.rng = std::make_shared<theia::RandomNumberGenerator>(FLAGS_random_seed);
 
   options.descriptor_type = StringToDescriptorExtractorType(FLAGS_descriptor);
   options.feature_density = StringToFeatureDensity(FLAGS_feature_density);

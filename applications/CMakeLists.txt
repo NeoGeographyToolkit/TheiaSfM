@@ -26,56 +26,39 @@ target_link_libraries(calibrate_camera_intrinsics theia ${GFLAGS_LIBRARIES} ${GL
 add_executable(undistort_images undistort_images.cc)
 target_link_libraries(undistort_images theia ${GFLAGS_LIBRARIES} ${GLOG_LIBRARIES})
 
-# Reconstruction visualization.
-# This can be tricky to build
-set(OpenGL_GL_PREFERENCE GLVND)
-#set(OpenGL_GL_PREFERENCE LEGACY)
-find_package(OpenGL REQUIRED)
-
-if (NOT APPLE)
-  find_package(X11 REQUIRED)
-endif (NOT APPLE)
-
-if (NOT MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-else (NOT MSVC)
-  find_package(GLEW REQUIRED)
-  if (GLEW_FOUND)
-    message ("-- Found GLEW: ${GLEW_INCLUDE_DIRS}")
-  else (GLEW FOUND)
-    message (FATAL_ERROR "-- Can't find GLEW. Please set GLEW_INCLUDE_DIR & GLEW_LIBRARY")
-  endif (GLEW_FOUND)
-  include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLEW_INCLUDE_DIRS} )
-  list(APPEND EXTRA_GL_LIBRARIES ${GLEW_LIBRARY} ${GLEW_LIBRARIES})
-endif (NOT MSVC)
-
-find_package(GLUT REQUIRED)
-if (GLUT_FOUND)
-  message ("-- Found GLUT: ${GLUT_INCLUDE_DIR}")
-else (GLUT FOUND)
-  message (FATAL_ERROR "-- Can't find GLUT. Please set GLUT_INCLUDE_DIR & GLUT_LIBRARY")
-endif (GLUT_FOUND)
-include_directories(${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIR})
-list(APPEND EXTRA_GL_LIBRARIES ${GLUT_LIBRARIES})
-
-# Need this to find libOpenGL and X11 deps on Linux
-set(EXTRA_LIBS "")
-if (NOT APPLE)
-  # set(EXTRA_LIBS ${X11_LIBRARIES} -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lXxf86vm)
+# Reconstruction visualization (requires OpenGL/GLUT, optional).
+option(BUILD_VIEW_RECONSTRUCTION
+  "Build view_reconstruction (requires OpenGL/GLUT)" OFF)
+if (BUILD_VIEW_RECONSTRUCTION)
+  set(OpenGL_GL_PREFERENCE GLVND)
+  find_package(OpenGL REQUIRED)
+  if (NOT APPLE)
+    find_package(X11 REQUIRED)
+  endif()
+  if (NOT MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+  else()
+    find_package(GLEW REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
+    list(APPEND EXTRA_GL_LIBRARIES ${GLEW_LIBRARY} ${GLEW_LIBRARIES})
+  endif()
+  find_package(GLUT REQUIRED)
+  include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIR})
+  list(APPEND EXTRA_GL_LIBRARIES ${GLUT_LIBRARIES})
+  set(EXTRA_LIBS "")
+  add_executable(view_reconstruction view_reconstruction.cc)
+  target_link_libraries(view_reconstruction theia ${EXTRA_LIBS}
+    ${GFLAGS_LIBRARIES} ${OPENGL_LIBRARIES} ${EXTRA_GL_LIBRARIES})
+  if(APPLE)
+    set_target_properties(view_reconstruction PROPERTIES
+      INSTALL_RPATH "@loader_path;@loader_path/../lib")
+  elseif(UNIX)
+    set_target_properties(view_reconstruction PROPERTIES
+      INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
+  endif()
+  install(TARGETS view_reconstruction RUNTIME DESTINATION
+    ${CMAKE_INSTALL_BINDIR})
 endif()
-
-add_executable(view_reconstruction view_reconstruction.cc)
-target_link_libraries(view_reconstruction theia ${EXTRA_LIBS} ${GFLAGS_LIBRARIES}
-  ${OPENGL_LIBRARIES} ${EXTRA_GL_LIBRARIES})
-
-if(APPLE)
-  set_target_properties(view_reconstruction PROPERTIES
-    INSTALL_RPATH "@loader_path;@loader_path/../lib") # ${MULTIVIEW_DEPS_DIR}/lib is already in 
-elseif(UNIX) # Unix which is not Apple
-  set_target_properties(view_reconstruction PROPERTIES
-    INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib:${MULTIVIEW_DEPS_DIR}/lib")
-endif()
-install(TARGETS view_reconstruction RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Useful tools for analyzing reconstructions.
 add_executable(compute_reconstruction_statistics compute_reconstruction_statistics.cc)

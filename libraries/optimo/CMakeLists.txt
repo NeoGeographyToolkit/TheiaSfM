@@ -43,9 +43,9 @@ include_directories(${PROJECT_SOURCE_DIR})
 # Compiler-specific C++11 activation.
 if (NOT MSVC)
   include(CheckCXXCompilerFlag)
-  check_cxx_compiler_flag("-std=c++11" COMPILER_HAS_CXX11_FLAG)
-  if (COMPILER_HAS_CXX11_FLAG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  check_cxx_compiler_flag("-std=c++17" COMPILER_HAS_CXX17_FLAG)
+  if (COMPILER_HAS_CXX17_FLAG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
     if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
       # Mac OS X before Mavericks uses libstdc++ by default but does not support
       # c++11. Force it to use libc++.
