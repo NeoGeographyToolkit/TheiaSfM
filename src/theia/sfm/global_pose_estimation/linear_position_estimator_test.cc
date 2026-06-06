@@ -33,6 +33,7 @@
 // Author: Chris Sweeney (cmsweeney@cs.ucsb.edu)
 
 #include <ceres/ceres.h>
+#include <random>
 #include <ceres/rotation.h>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -180,7 +181,7 @@ class EstimatePositionsLinearTest : public ::testing::Test {
     // Add random tracks.
     for (int i = 0; i < num_tracks; i++) {
       // Shuffle the view ids so that we can obtain tracks in random views.
-      std::random_shuffle(view_ids.begin(), view_ids.end());
+      std::shuffle(view_ids.begin(), view_ids.end(), std::mt19937());
 
       // Create a track that is seen in several views.
       Eigen::Vector4d point = rng.RandVector4d();
@@ -210,7 +211,7 @@ class EstimatePositionsLinearTest : public ::testing::Test {
     }
 
     while (view_pairs_.size() < num_view_pairs) {
-      std::random_shuffle(view_ids.begin(), view_ids.end());
+      std::shuffle(view_ids.begin(), view_ids.end(), std::mt19937());
       const ViewIdPair view_id_pair =
           (view_ids[0] < view_ids[1]) ? ViewIdPair(view_ids[0], view_ids[1])
                                       : ViewIdPair(view_ids[1], view_ids[0]);

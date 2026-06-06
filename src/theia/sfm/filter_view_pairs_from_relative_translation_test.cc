@@ -33,6 +33,7 @@
 // Author: Chris Sweeney (cmsweeney@cs.ucsb.edu)
 
 #include <ceres/rotation.h>
+#include <random>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <unordered_map>
@@ -111,7 +112,7 @@ void CreateValidViewPairs(
 
   // Add extra edges.
   while (view_graph->NumEdges() < num_valid_view_pairs) {
-    std::random_shuffle(view_ids.begin(), view_ids.end());
+    std::shuffle(view_ids.begin(), view_ids.end(), std::mt19937());
     const ViewIdPair view_id_pair(view_ids[0], view_ids[1]);
     if (view_id_pair.first > view_id_pair.second ||
         view_graph->HasEdge(view_id_pair.first, view_id_pair.second)) {

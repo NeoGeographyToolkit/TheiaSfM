@@ -33,6 +33,7 @@
 // Author: Victor Fragoso (victor.fragoso@mail.wvu.edu)
 
 #include <algorithm>
+#include <random>
 #include <cmath>
 #include <vector>
 
@@ -106,7 +107,7 @@ class LmedTest : public ::testing::Test {
                                  rng.RandDouble(0.0, 10000));
     }
     // Reshuffle.
-    std::random_shuffle(input_points->begin(), input_points->end());
+    std::shuffle(input_points->begin(), input_points->end(), std::mt19937());
   }
 
   static void TearDownTestCase() {

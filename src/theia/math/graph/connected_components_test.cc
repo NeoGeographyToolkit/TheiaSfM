@@ -33,6 +33,7 @@
 // Author: Chris Sweeney (cmsweeney@cs.ucsb.edu)
 
 #include <algorithm>
+#include <random>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -114,7 +115,7 @@ TEST(ConnectedComponents, RandomOrder) {
 
   for (int i = 0; i < 25; i++) {
     ConnectedComponents<int> connected_components;
-    std::random_shuffle(pairs_to_add.begin(), pairs_to_add.end());
+    std::shuffle(pairs_to_add.begin(), pairs_to_add.end(), std::mt19937());
 
     for (const auto& pair_to_add : pairs_to_add) {
       connected_components.AddEdge(pair_to_add.first, pair_to_add.second);

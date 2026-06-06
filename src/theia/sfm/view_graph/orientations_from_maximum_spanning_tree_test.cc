@@ -33,6 +33,7 @@
 // Author: Chris Sweeney (cmsweeney@cs.ucsb.edu)
 
 #include <ceres/rotation.h>
+#include <random>
 #include <Eigen/Core>
 #include <unordered_map>
 #include <vector>
@@ -103,7 +104,7 @@ void CreateViewGraph(
 
   // Add extra edges.
   while (view_graph->NumEdges() < num_edges) {
-    std::random_shuffle(view_ids.begin(), view_ids.end());
+    std::shuffle(view_ids.begin(), view_ids.end(), std::mt19937());
     if (view_graph->GetEdge(view_ids[0], view_ids[1]) != nullptr) {
       continue;
     }

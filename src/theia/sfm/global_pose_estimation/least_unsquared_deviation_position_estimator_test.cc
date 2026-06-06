@@ -33,6 +33,7 @@
 // Author: Chris Sweeney (cmsweeney@cs.ucsb.edu)
 
 #include <ceres/ceres.h>
+#include <random>
 #include <ceres/rotation.h>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -172,7 +173,7 @@ class EstimatePositionsLeastUnsquaredDeviationTest : public ::testing::Test {
     }
 
     while (view_pairs_.size() < num_view_pairs) {
-      std::random_shuffle(view_ids.begin(), view_ids.end());
+      std::shuffle(view_ids.begin(), view_ids.end(), std::mt19937());
       const ViewIdPair view_id_pair =
           (view_ids[0] < view_ids[1]) ? ViewIdPair(view_ids[0], view_ids[1])
                                       : ViewIdPair(view_ids[1], view_ids[0]);
