@@ -66,6 +66,12 @@ bool AkazeDescriptorExtractor::DetectAndExtractDescriptors(
                                      Eigen::RowMajor> >(
           gray_image.Data(), gray_image.Rows(), gray_image.Cols());
 
+  // AKAZE's contrast and diffusivity parameters (kcontrast, thresholds) are tuned
+  // for pixel values in [0,1], but images are read in their native 0-255 range
+  // (which SIFT expects). Rescale to [0,1] here so AKAZE gets the range it wants.
+  // TODO: long term, normalize by input statistics rather than a fixed 255.
+  img_32 /= 255.0f;
+
   // Set the akaze options.
   libAKAZE::AKAZEOptions options;
   options.img_width = img_32.cols();
