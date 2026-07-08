@@ -268,9 +268,11 @@ void FloatImage::ScalePixels(float scale) {
 }
 
 void FloatImage::Read(const std::string& filename) {
-  
-  // Ensure we always read a float image. We count on this later.
-  cv::Mat input_image = cv::imread(filename);
+
+  // Read at native depth/channels. The default IMREAD_COLOR forces 8-bit, and
+  // OpenCV then refuses 32-bit float TIFFs (returns empty). This way int and float
+  // images land the same; convertTo below changes only the container, not values.
+  cv::Mat input_image = cv::imread(filename, cv::IMREAD_ANYDEPTH | cv::IMREAD_ANYCOLOR);
   if (input_image.channels() == 1) {
     input_image.convertTo(m_opencv_image, CV_32F);
   } else {
