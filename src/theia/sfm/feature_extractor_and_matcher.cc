@@ -232,10 +232,15 @@ void FeatureExtractorAndMatcher::ExtractAndMatchFeatures() {
   // This forces all tasks to complete before proceeding.
   thread_pool.reset(nullptr);
 
-  // After all threads complete feature extraction, perform matching.
-  SelectImagePairsWithGlobalDescriptorMatching();
-  // Free up memory.
-  global_image_descriptor_extractor_.release();
+  // Optionally use global image descriptors to pick which image pairs to match.
+  // The extractor is created only when this option is on, so the call must be
+  // gated or it dereferences a null pointer. With it off, the matcher matches
+  // all pairs directly.
+  if (options_.select_image_pairs_with_global_image_descriptor_matching) {
+    SelectImagePairsWithGlobalDescriptorMatching();
+    // Free up memory.
+    global_image_descriptor_extractor_.release();
+  }
   
   LOG(INFO) << "Matching images...";
   matcher_->MatchImages();
