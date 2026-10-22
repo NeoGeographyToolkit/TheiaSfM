@@ -36,6 +36,11 @@
 
 #include <glog/logging.h>
 #include <stlplus3/file_system.hpp>
+
+#include <fnmatch.h>
+
+#include <algorithm>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -46,25 +51,32 @@ bool GetFilepathsFromWildcard(const std::string& filepath_with_wildcard,
   CHECK_NOTNULL(filepaths)->clear();
 
   const std::string folder = stlplus::folder_part(filepath_with_wildcard);
-  if (!stlplus::folder_exists(folder)) {
+  const std::string filename_part =
+      stlplus::filename_part(filepath_with_wildcard);
+
+  namespace fs = std::filesystem;
+  if (folder.empty() || !fs::exists(folder)) {
     VLOG(2) << "Input folder does not exist:" << folder;
     return false;
   }
 
-  const std::string filename_part =
-      stlplus::filename_part(filepath_with_wildcard);
-
-  const bool kReturnSubfolders = false;
-  const bool kReturnFiles = true;
-  std::vector<std::string> image_filenames = stlplus::folder_wildcard(
-      folder, filename_part, kReturnSubfolders, kReturnFiles);
-
-  filepaths->resize(image_filenames.size());
-  for (int i = 0; i < filepaths->size(); i++) {
-    filepaths->at(i) = stlplus::create_filespec(folder, image_filenames[i]);
+  // Keep every directory entry whose name matches the wildcard. Use
+  // std::filesystem so symlinked images are included, since is_regular_file
+  // follows the link. The older stlplus folder_wildcard skipped symlinks, which
+  // broke callers that symlink their inputs (for example theia_sfm).
+  std::error_code ec;
+  for (const auto& entry : fs::directory_iterator(folder, ec)) {
+    if (!entry.is_regular_file(ec))
+      continue;
+    const std::string name = entry.path().filename().string();
+    if (fnmatch(filename_part.c_str(), name.c_str(), 0) == 0)
+      filepaths->push_back(entry.path().string());
   }
 
-  if (filepaths->size() == 0) {
+  // Sort for a deterministic order across platforms.
+  std::sort(filepaths->begin(), filepaths->end());
+
+  if (filepaths->empty()) {
     VLOG(2) << "No files matched the input.";
   }
 
