@@ -123,6 +123,14 @@ class FloatImage {
   // Scale all the pixel values by a scale factor.
   void ScalePixels(float scale);
 
+  // Robustly stretch the intensities into [out_lo, out_hi] before feature
+  // detection. The band [median - 2*nmad, median + 2*nmad] is mapped linearly to
+  // the output range, with nmad = 1.4826 * median(|x - median|). This resists
+  // outliers (hot pixels, saturation, nodata) far better than a min/max stretch,
+  // so the detector thresholds behave for any input range or type: SIFT wants
+  // [0,255], AKAZE wants [0,1]. Same robust band ASP uses before matching.
+  void NormalizeRobust(const float out_lo, const float out_hi);
+
   // Write image to file.
   void Read(const std::string& filename);
   void Write(const std::string& filename) const;

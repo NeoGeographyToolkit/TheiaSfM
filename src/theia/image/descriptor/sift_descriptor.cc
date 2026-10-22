@@ -239,10 +239,14 @@ bool SiftDescriptorExtractor::DetectAndExtractDescriptors(
   // input, so the best solution (for now) is to copy the image.
   FloatImage mutable_image = image.AsGrayscaleImage();
 
+  // SIFT's peak threshold assumes pixels in [0,255], so robustly stretch the
+  // input to that range. Handles any input range or type, not just 8-bit.
+  mutable_image.NormalizeRobust(0.0f, 255.0f);
+
   // Calculate the first octave to process.
   int vl_status =
       vl_sift_process_first_octave(sift_filter_.get(), mutable_image.Data());
-  
+
   // Process octaves until you can't anymore.
   while (vl_status != VL_ERR_EOF) {
     // Detect the keypoints.

@@ -267,6 +267,79 @@ void FloatImage::ScalePixels(float scale) {
   //oiio::ImageBufAlgo::mul(image_, image_, scale);
 }
 
+void FloatImage::NormalizeRobust(const float out_lo, const float out_hi) {
+
+  // Feature detectors assume a fixed intensity range, so map the robust band
+  // [median - 2*nmad, median + 2*nmad] onto [out_lo, out_hi]. See the header for
+  // the rationale. Operate on the single grayscale channel.
+  if (Channels() != 1)
+    ConvertToGrayscaleImage();
+
+  // Gather the finite pixel values. Non-finite pixels (nodata) are skipped from
+  // the statistics and later pulled to the low end.
+  std::vector<float> samples;
+  samples.reserve(m_opencv_image.total());
+  for (int row = 0; row < m_opencv_image.rows; row++) {
+    const float* ptr = m_opencv_image.ptr<float>(row);
+    for (int col = 0; col < m_opencv_image.cols; col++) {
+      if (std::isfinite(ptr[col]))
+        samples.push_back(ptr[col]);
+    }
+  }
+
+  if (samples.empty())
+    return;
+
+  // Median via nth_element (O(n), partitions the vector around the midpoint).
+  const size_t mid = samples.size() / 2;
+  std::nth_element(samples.begin(), samples.begin() + mid, samples.end());
+  const float median = samples[mid];
+
+  // nmad = 1.4826 * median(|x - median|).
+  std::vector<float> abs_devs(samples.size());
+  for (size_t it = 0; it < samples.size(); it++)
+    abs_devs[it] = std::abs(samples[it] - median);
+  std::nth_element(abs_devs.begin(), abs_devs.begin() + mid, abs_devs.end());
+  const float nmad = 1.4826f * abs_devs[mid];
+
+  // Actual extremes (the robust band is clamped to these, as in ASP).
+  float data_min = samples[0];
+  float data_max = samples[0];
+  for (size_t it = 1; it < samples.size(); it++) {
+    if (samples[it] < data_min)
+      data_min = samples[it];
+    if (samples[it] > data_max)
+      data_max = samples[it];
+  }
+
+  float lo = std::max(data_min, median - 2.0f * nmad);
+  float hi = std::min(data_max, median + 2.0f * nmad);
+
+  // Degenerate spread (flat image): fall back to the full range, then to a
+  // constant output if even that is empty.
+  if (hi <= lo) {
+    lo = data_min;
+    hi = data_max;
+  }
+  if (hi <= lo) {
+    m_opencv_image.setTo(out_lo);
+    return;
+  }
+
+  // Clamp to [lo, hi] and rescale linearly to [out_lo, out_hi].
+  const float scale = (out_hi - out_lo) / (hi - lo);
+  for (int row = 0; row < m_opencv_image.rows; row++) {
+    float* ptr = m_opencv_image.ptr<float>(row);
+    for (int col = 0; col < m_opencv_image.cols; col++) {
+      float val = ptr[col];
+      if (!std::isfinite(val))
+        val = lo;
+      val = std::min(std::max(val, lo), hi);
+      ptr[col] = out_lo + (val - lo) * scale;
+    }
+  }
+}
+
 void FloatImage::Read(const std::string& filename) {
 
   // Read at native depth/channels. The default IMREAD_COLOR forces 8-bit, and
